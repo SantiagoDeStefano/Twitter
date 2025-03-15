@@ -6,13 +6,13 @@ import {
   UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
+import { config } from 'dotenv'
 
 import User from '~/models/schemas/user.schema'
 import DatabaseService from './database.services'
-import dotenv from 'dotenv'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 
-dotenv.config()
+config()
 
 class UserService {
   private signAccessToken(user_id: string): Promise<string> {

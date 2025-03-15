@@ -1,14 +1,10 @@
-import { 
-  Collection, 
-  Db, 
-  MongoClient, 
-  ServerApiVersion } from 'mongodb'
+import { Collection, Db, MongoClient, ServerApiVersion } from 'mongodb'
 import { config } from 'dotenv'
 import User from '../models/schemas/user.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 
 config()
-const uri = 'mongodb+srv://PhamKhoiNguyen:47444128072005@cluster0.mhe4u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.mhe4u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
