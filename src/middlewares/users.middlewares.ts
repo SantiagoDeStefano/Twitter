@@ -7,10 +7,10 @@ import { JsonWebTokenError } from 'jsonwebtoken'
 import { capitalize } from 'lodash'
 import { Request } from 'express'
 
-import userService from '~/services/users.services'
-import DatabaseService from '~/services/database.services'
 import ErrorWithStatus from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
+import userService from '~/services/users.services'
+import DatabaseService from '~/services/database.services'
 
 export const loginValidator = validate(
   checkSchema(
