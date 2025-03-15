@@ -1,5 +1,6 @@
 export const USERS_MESSAGES = {
   VALIDATION_ERROR: 'Validation error',
+  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success',
 
   USER_NOT_FOUND: 'User not found',
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or does not exist',
@@ -7,7 +8,7 @@ export const USERS_MESSAGES = {
   NAME_IS_REQUIRED: 'Name is required',
   NAME_LENGTH_MUST_BE_FROM_3_TO_100: 'Name length must be from 3 to 100',
   NAME_MUST_BE_A_STRING: 'Name must be a string',
-  
+
   EMAIL_ALREADY_EXISTS: 'Email already exists',
   EMAIL_DOES_NOT_EXIST: 'Email does not exist',
   EMAIL_IS_REQUIRED: 'Email is required',
@@ -22,7 +23,7 @@ export const USERS_MESSAGES = {
   PASSWORD_MUST_BE_FROM_8_TO_16: 'Password must be between 8 and 16',
   PASSWORD_MUST_BE_STRONG: 'Password must be strong',
   PASSWORD_MUST_BE_A_STRING: 'Password must be a string',
-  
+
   CONFIRM_PASSWORD_IS_REQUIRED: 'Password confirmation is required',
   CONFIRM_PASSWORD_MUST_BE_FROM_8_TO_16: 'Password confirmation must be between 8 and 16',
   CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD: 'Password confirmation does not match password',
@@ -38,5 +39,9 @@ export const USERS_MESSAGES = {
   REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid',
   RESEND_VERIFY_EMAIL_SUCCESS: 'Resend verify email success',
 
-  ACCESS_TOKEN_REQUIRED: 'Access token is required'
+  ACCESS_TOKEN_REQUIRED: 'Access token is required',
+
+  FORGOT_PASSWORD_TOKEN_REQUIRED: 'Forgot password token is required',
+
+  INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token'
 } as const

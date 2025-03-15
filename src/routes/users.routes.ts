@@ -5,7 +5,8 @@ import {
   forgotPasswordValidator, 
   loginValidator, 
   refreshTokenValidator, 
-  registerValidator
+  registerValidator,
+  verifyForgotPasswordTokenValidator
 } from '../middlewares/users.middlewares'
 import { 
   loginController, 
@@ -13,6 +14,7 @@ import {
   logoutController, 
   verifyEmailController, 
   resendVerifyEmailController, 
+  verifyForgotPasswordController,
   forgotPasswordController
 } from '../controllers/users.controller'
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -70,5 +72,14 @@ usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandle
  * Body: { email: string }
  */
 usersRouter.post('/forgot-password', forgotPasswordValidator ,wrapRequestHandler(forgotPasswordController)) 
+
+
+/**
+ * Description: Verify link(token) in email to reset password
+ * Path: /verity-forgot-password
+ * Method: POST
+ * Body: { forgot_password_token: string }
+ */
+usersRouter.post('/verity-forgot-password', verifyForgotPasswordTokenValidator ,wrapRequestHandler(verifyForgotPasswordController)) 
 
 export default usersRouter
