@@ -230,16 +230,15 @@ export const emailVerifyTokenValidator = validate(
               const decoded_email_verify_token = await verifyToken({
                 token: value,
                 secretOrPublicKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
-              });
-              (req as Request).decoded_email_verify_token = decoded_email_verify_token
-            }
-            catch(error) {
+              })
+              ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
+            } catch (error) {
               throw new ErrorWithStatus({
                 message: capitalize((error as JsonWebTokenError).message),
                 status: HTTP_STATUS.UNAUTHORIZED
               })
             }
-            return true;
+            return true
           }
         }
       }
@@ -284,34 +283,31 @@ export const verifyForgotPasswordTokenValidator = validate(
                 status: HTTP_STATUS.UNAUTHORIZED
               })
             }
-            try { 
+            try {
               const decoded_forgot_password_token = await verifyToken({
                 token: value,
                 secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
               })
               const { user_id } = decoded_forgot_password_token
               const user = await DatabaseService.user.findOne({ _id: new ObjectId(user_id) })
-              if(!user) {
+              if (!user) {
                 throw new ErrorWithStatus({
                   message: USERS_MESSAGES.USER_NOT_FOUND,
                   status: HTTP_STATUS.NOT_FOUND
                 })
               }
-              if(user.forgot_password_token != value) {
+              if (user.forgot_password_token != value) {
                 throw new ErrorWithStatus({
                   message: USERS_MESSAGES.INVALID_FORGOT_PASSWORD_TOKEN,
                   status: HTTP_STATUS.UNAUTHORIZED
                 })
               }
-            }
-            catch(error) {
-              if(error instanceof ErrorWithStatus) {
-                throw new ErrorWithStatus({
-                  message: capitalize(error.message),
-                  status: HTTP_STATUS.UNAUTHORIZED
-                })
-              }
-              throw error
+            } 
+            catch (error) {
+              throw new ErrorWithStatus({
+                message: capitalize((error as JsonWebTokenError).message),
+                status: HTTP_STATUS.UNAUTHORIZED
+              })  
             }
             return true
           }
