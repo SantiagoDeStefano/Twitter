@@ -15,7 +15,8 @@ import {
   verifyEmailController, 
   resendVerifyEmailController, 
   verifyForgotPasswordController,
-  forgotPasswordController
+  forgotPasswordController,
+  getMeController
 } from '../controllers/users.controller'
 import { wrapRequestHandler } from '~/utils/handlers'
 
@@ -82,4 +83,11 @@ usersRouter.post('/forgot-password', forgotPasswordValidator ,wrapRequestHandler
  */
 usersRouter.post('/verity-forgot-password', verifyForgotPasswordTokenValidator ,wrapRequestHandler(verifyForgotPasswordController)) 
 
+/**
+ * Description: Get my profile
+ * Path: /me
+ * Method: GET
+ * Headers: { Authorization: Bearer <access_token> }
+*/
+usersRouter.get('/me', accessTokenValidator ,wrapRequestHandler(getMeController)) 
 export default usersRouter

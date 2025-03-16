@@ -1,9 +1,7 @@
 import { RegisterRequestBody } from '~/models/requests/users.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
-import { 
-  TokenType, 
-  UserVerifyStatus } from '~/constants/enums'
+import { TokenType, UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { config } from 'dotenv'
@@ -71,7 +69,7 @@ class UserService {
     }
   }
 
-  async register(payload: RegisterRequestBody) {  
+  async register(payload: RegisterRequestBody) {
     const user_id = new ObjectId()
     const email_verify_token = await this.signEmailVerifyToken(user_id.toString())
     await DatabaseService.user.insertOne(
@@ -108,20 +106,19 @@ class UserService {
 
   async verifyEmail(user_id: string) {
     //Declare update value
-    //MongoDB update the value 
+    //MongoDB update the value
     const [tokens] = await Promise.all([
       this.signAccessAndRefreshToken(user_id),
 
-      DatabaseService.user.updateOne(
-        { _id: new ObjectId(user_id) },
-        [{
+      DatabaseService.user.updateOne({ _id: new ObjectId(user_id) }, [
+        {
           $set: {
             email_verify_token: '',
             verify: UserVerifyStatus.Verified,
             updated_at: '$$NOW'
           }
-        }]
-      )
+        }
+      ])
     ])
 
     const [access_token, refresh_token] = tokens
@@ -136,19 +133,18 @@ class UserService {
     const email_verify_token = await this.signEmailVerifyToken(user_id)
     //Fake resend email
     console.log('Resend verify email: ', email_verify_token)
-  
+
     //Update email_verify_token in database
-    await DatabaseService.user.updateOne(
-      { _id: new ObjectId(user_id) },
-      [{
+    await DatabaseService.user.updateOne({ _id: new ObjectId(user_id) }, [
+      {
         $set: {
           email_verify_token,
           updated_at: '$$NOW'
         }
-      }]
-    )
+      }
+    ])
     return {
-      message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS,
+      message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
     }
   }
 
@@ -167,22 +163,34 @@ class UserService {
 
   async forgotPassword(user_id: string) {
     const forgot_password_token = await this.signForgotPasswordToken(user_id)
-    await DatabaseService.user.updateOne(
-      { _id: new ObjectId(user_id) },
-      [{
+    await DatabaseService.user.updateOne({ _id: new ObjectId(user_id) }, [
+      {
         $set: {
-          forgot_password_token,  
+          forgot_password_token,
           updated_at: '$$NOW'
         }
-      }]
-    )
+      }
+    ])
     //Fake sending email https://twitter.com/forgot-password?token=token
     console.log('Forgot password token: ', forgot_password_token)
-    
+
     return {
       message: USERS_MESSAGES.CHECK_YOUR_EMAIL_FOR_RESET_PASSWORD,
       forgot_password_token
     }
+  }
+
+  async getMe(user_id: string) {
+    const user = await DatabaseService.user.findOne(
+      { _id: new ObjectId(user_id) },
+      {
+        projection: {
+          password: 0,
+          email_verify_token: 0
+        }
+      }
+    )
+    return user
   }
 }
 

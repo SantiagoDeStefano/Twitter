@@ -1,15 +1,13 @@
-import { 
-  Request, 
-  Response, 
-  NextFunction } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { 
-  ForgotPasswordRequestBody, 
-  LoginRequestBody, 
-  LogoutRequestBody, 
-  RegisterRequestBody, 
-  TokenPayload, 
-  VerifyEmailRequestBody } from '~/models/requests/users.requests'
+import {
+  ForgotPasswordRequestBody,
+  LoginRequestBody,
+  LogoutRequestBody,
+  RegisterRequestBody,
+  TokenPayload,
+  VerifyEmailRequestBody
+} from '~/models/requests/users.requests'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
@@ -20,7 +18,7 @@ import User from '~/models/schemas/user.schema'
 import userService from '~/services/users.services'
 
 export const loginController = async (
-  req: Request<ParamsDictionary, any, LoginRequestBody>, 
+  req: Request<ParamsDictionary, any, LoginRequestBody>,
   res: Response
 ): Promise<void> => {
   const user = req.user as User
@@ -35,13 +33,13 @@ export const loginController = async (
 
 export const registerController = async (
   req: Request<ParamsDictionary, any, RegisterRequestBody>,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const result = await userService.register(req.body)
-    res.json({
-      message: USERS_MESSAGES.REGISTER_SUCCESS,
-      result
-    })
+  res.json({
+    message: USERS_MESSAGES.REGISTER_SUCCESS,
+    result
+  })
   return
 }
 
@@ -56,7 +54,7 @@ export const logoutController = async (
 }
 
 export const verifyEmailController = async (
-  req: Request<ParamsDictionary, any, VerifyEmailRequestBody>, 
+  req: Request<ParamsDictionary, any, VerifyEmailRequestBody>,
   res: Response
 ): Promise<void> => {
   const { user_id } = req.decoded_email_verify_token as TokenPayload
@@ -87,27 +85,23 @@ export const verifyEmailController = async (
   })
 }
 
-export const resendVerifyEmailController = async (
-  req: Request, 
-  res: Response, 
-  next: NextFunction
-): Promise<void> => {
+export const resendVerifyEmailController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const user = await DatabaseService.user.findOne({ _id: new ObjectId(user_id) })
-  if(!user) {
+  if (!user) {
     res.status(HTTP_STATUS.NOT_FOUND).json({
       error: USERS_MESSAGES.USER_NOT_FOUND
     })
     return
   }
 
-  if(user.verify == UserVerifyStatus.Verified) {
+  if (user.verify == UserVerifyStatus.Verified) {
     res.status(HTTP_STATUS.OK).json({
       message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED
     })
     return
   }
-  
+
   const result = await userService.resendEmailVerifyToken(user_id)
   res.json({
     result
@@ -115,8 +109,8 @@ export const resendVerifyEmailController = async (
 }
 
 export const forgotPasswordController = async (
-  req: Request<ParamsDictionary, any, ForgotPasswordRequestBody>, 
-  res: Response, 
+  req: Request<ParamsDictionary, any, ForgotPasswordRequestBody>,
+  res: Response
 ): Promise<void> => {
   const { _id } = req.user as User
   const result = await userService.forgotPassword(_id.toString())
@@ -134,4 +128,13 @@ export const verifyForgotPasswordController = async (
   res.json({
     message: USERS_MESSAGES.VERIFY_FORGOT_PASSWORD_SUCCESS
   })
-} 
+}
+
+export const getMeController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const user = await userService.getMe(user_id)
+  res.json({
+    msg: USERS_MESSAGES.GET_ME_SUCCESS,
+    result: user
+  })
+}
