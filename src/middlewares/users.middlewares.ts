@@ -317,3 +317,51 @@ export const verifyForgotPasswordTokenValidator = validate(
     ['body']
   )
 )
+
+export const resetPasswordValidator = validate(
+  checkSchema({
+    new_password: {
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
+      },
+      isString: {
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
+      },
+      isLength: {
+        options: { min: 8, max: 16 },
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_FROM_8_TO_16
+      },
+      isStrongPassword: {
+        options: {
+          minLength: 8,
+          minLowercase: 1,
+          minUppercase: 1,
+          minNumbers: 1,
+          minSymbols: 1
+        },
+        errorMessage:
+          'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.'
+      }
+    },
+    confirm_new_password: {
+      notEmpty: {
+        errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
+      },
+      isString: {
+        errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_A_STRING
+      },
+      isLength: {
+        options: { min: 8, max: 16 },
+        errorMessage: 'Confirm password must be between 8 and 16 characters long.'
+      },
+      custom: {
+        options: (value, { req }) => {
+          if (value !== req.body.new_password) {
+            throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD)
+          }
+          return true
+        }
+      }
+    },
+  })
+)

@@ -40,6 +40,7 @@ export const USERS_MESSAGES = {
   REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid',
   REGISTER_SUCCESS: 'Register success',
   RESEND_VERIFY_EMAIL_SUCCESS: 'Resend verify email success',
+  RESET_PASSWORD_SUCCESS: 'Reset password success',
 
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or does not exist',
   USER_NOT_FOUND: 'User not found',
