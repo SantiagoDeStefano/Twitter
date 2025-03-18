@@ -137,7 +137,8 @@ export const resetPasswordController = async (
   res: Response
 ): Promise<void> => {
   const { user_id } = req.decoded_forgot_password_token as TokenPayload
-  const result = await userService.resetPassword(user_id, req.body.new_password)
+  const password = req.body.new_password
+  const result = await userService.resetPassword(user_id, password)
   res.json({
     result
   })

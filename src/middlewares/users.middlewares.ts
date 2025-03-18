@@ -1,4 +1,4 @@
-import { check, checkSchema } from 'express-validator'
+import { check, checkSchema, ParamSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { hashPassword } from '~/utils/crypto'
@@ -12,6 +12,99 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import userService from '~/services/users.services'
 import DatabaseService from '~/services/database.services'
 import { ObjectId } from 'mongodb'
+
+const passwordSchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
+  },
+  isString: {
+    errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
+  },
+  isLength: {
+    options: { min: 8, max: 16 },
+    errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_FROM_8_TO_16
+  },
+  isStrongPassword: {
+    options: {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1
+    },
+    errorMessage: USERS_MESSAGES.STRONG_PASSWORD
+  }
+}
+
+const confirmPasswordSchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
+  },
+  isString: {
+    errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_A_STRING
+  },
+  isLength: {
+    options: { min: 8, max: 16 },
+    errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_FROM_8_TO_16
+  },
+  isStrongPassword: {
+    options: {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1
+    }
+  },
+  custom: {
+    options: (value, { req }) => {
+      if (value !== req.body.new_password) {
+        throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD)
+      }
+      return true
+    }
+  }
+}
+
+const forgotPasswordTokenSchema: ParamSchema = {
+  custom: {
+    options: async (value: string, { req }) => {
+      if (!value) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.FORGOT_PASSWORD_TOKEN_REQUIRED,
+          status: HTTP_STATUS.UNAUTHORIZED
+        })
+      }
+      try {
+        const decoded_forgot_password_token = await verifyToken({
+          token: value,
+          secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
+        })
+        const { user_id } = decoded_forgot_password_token
+        const user = await DatabaseService.user.findOne({ _id: new ObjectId(user_id) })
+        if (!user) {
+          throw new ErrorWithStatus({
+            message: USERS_MESSAGES.USER_NOT_FOUND,
+            status: HTTP_STATUS.NOT_FOUND
+          })
+        }
+        if (user.forgot_password_token != value) {
+          throw new ErrorWithStatus({
+            message: USERS_MESSAGES.INVALID_FORGOT_PASSWORD_TOKEN,
+            status: HTTP_STATUS.UNAUTHORIZED
+          })
+        }
+        req.decoded_forgot_password_token = decoded_forgot_password_token
+      } catch (error) {
+        throw new ErrorWithStatus({
+          message: capitalize((error as JsonWebTokenError).message),
+          status: HTTP_STATUS.UNAUTHORIZED
+        })
+      }
+      return true
+    }
+  }
+}
 
 export const loginValidator = validate(
   checkSchema(
@@ -79,49 +172,8 @@ export const registerValidator = validate(
           }
         }
       },
-      password: {
-        notEmpty: {
-          errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
-        },
-        isString: {
-          errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
-        },
-        isLength: {
-          options: { min: 8, max: 16 },
-          errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_FROM_8_TO_16
-        },
-        isStrongPassword: {
-          options: {
-            minLength: 8,
-            minLowercase: 1,
-            minUppercase: 1,
-            minNumbers: 1,
-            minSymbols: 1
-          },
-          errorMessage:
-            'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.'
-        }
-      },
-      confirm_password: {
-        notEmpty: {
-          errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
-        },
-        isString: {
-          errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_A_STRING
-        },
-        isLength: {
-          options: { min: 8, max: 16 },
-          errorMessage: 'Confirm password must be between 8 and 16 characters long.'
-        },
-        custom: {
-          options: (value, { req }) => {
-            if (value !== req.body.password) {
-              throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD)
-            }
-            return true
-          }
-        }
-      },
+      password: passwordSchema,
+      confirm_password: confirmPasswordSchema,
       date_of_birth: {
         notEmpty: {
           errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_REQUIRED
@@ -274,94 +326,19 @@ export const forgotPasswordValidator = validate(
 export const verifyForgotPasswordTokenValidator = validate(
   checkSchema(
     {
-      forgot_password_token: {
-        custom: {
-          options: async (value: string) => {
-            if (!value) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.FORGOT_PASSWORD_TOKEN_REQUIRED,
-                status: HTTP_STATUS.UNAUTHORIZED
-              })
-            }
-            try {
-              const decoded_forgot_password_token = await verifyToken({
-                token: value,
-                secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
-              })
-              const { user_id } = decoded_forgot_password_token
-              const user = await DatabaseService.user.findOne({ _id: new ObjectId(user_id) })
-              if (!user) {
-                throw new ErrorWithStatus({
-                  message: USERS_MESSAGES.USER_NOT_FOUND,
-                  status: HTTP_STATUS.NOT_FOUND
-                })
-              }
-              if (user.forgot_password_token != value) {
-                throw new ErrorWithStatus({
-                  message: USERS_MESSAGES.INVALID_FORGOT_PASSWORD_TOKEN,
-                  status: HTTP_STATUS.UNAUTHORIZED
-                })
-              }
-            } 
-            catch (error) {
-              throw new ErrorWithStatus({
-                message: capitalize((error as JsonWebTokenError).message),
-                status: HTTP_STATUS.UNAUTHORIZED
-              })  
-            }
-            return true
-          }
-        }
-      }
+      forgot_password_token: forgotPasswordTokenSchema
     },
     ['body']
   )
 )
 
 export const resetPasswordValidator = validate(
-  checkSchema({
-    new_password: {
-      notEmpty: {
-        errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
-      },
-      isString: {
-        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
-      },
-      isLength: {
-        options: { min: 8, max: 16 },
-        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_FROM_8_TO_16
-      },
-      isStrongPassword: {
-        options: {
-          minLength: 8,
-          minLowercase: 1,
-          minUppercase: 1,
-          minNumbers: 1,
-          minSymbols: 1
-        },
-        errorMessage:
-          'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.'
-      }
+  checkSchema(
+    {
+      new_password: passwordSchema,
+      confirm_new_password: confirmPasswordSchema,
+      forgot_password_token: forgotPasswordTokenSchema
     },
-    confirm_new_password: {
-      notEmpty: {
-        errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
-      },
-      isString: {
-        errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_A_STRING
-      },
-      isLength: {
-        options: { min: 8, max: 16 },
-        errorMessage: 'Confirm password must be between 8 and 16 characters long.'
-      },
-      custom: {
-        options: (value, { req }) => {
-          if (value !== req.body.new_password) {
-            throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD)
-          }
-          return true
-        }
-      }
-    },
-  })
+    ['body']
+  )
 )

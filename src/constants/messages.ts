@@ -46,5 +46,7 @@ export const USERS_MESSAGES = {
   USER_NOT_FOUND: 'User not found',
 
   VALIDATION_ERROR: 'Validation error',
-  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success'
+  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success',
+
+  STRONG_PASSWORD: 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character',
 } as const
