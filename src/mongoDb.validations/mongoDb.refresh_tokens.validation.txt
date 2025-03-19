@@ -1,0 +1,31 @@
+{
+  $jsonSchema: {
+    bsonType: 'object',
+    title: 'Refresh Token object validation',
+    required: [
+      '_id',
+      'token',
+      'user_id',
+      'create_at'
+    ],
+    properties: {
+      _id: {
+        bsonType: 'objectId',
+        description: '\'_id\' is required and must be a valid ObjectId'
+      },
+      token: {
+        bsonType: 'string',
+        description: '\'token\' is required and must be a valid string'
+      },
+      user_id: {
+        bsonType: 'objectId',
+        description: '\'user_id\' is required and must be a valid ObjectId'
+      },
+      created_at: {
+        bsonType: 'date',
+        description: '\'created_at\' is required and must be a valid date'
+      }
+    },
+    additionalProperties: false
+  }
+}

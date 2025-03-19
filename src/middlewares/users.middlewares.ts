@@ -47,18 +47,9 @@ const confirmPasswordSchema: ParamSchema = {
     options: { min: 8, max: 16 },
     errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_FROM_8_TO_16
   },
-  isStrongPassword: {
-    options: {
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 1
-    }
-  },
   custom: {
     options: (value, { req }) => {
-      if (value !== req.body.new_password) {
+      if (value !== req.body.password) {
         throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD)
       }
       return true
@@ -335,8 +326,8 @@ export const verifyForgotPasswordTokenValidator = validate(
 export const resetPasswordValidator = validate(
   checkSchema(
     {
-      new_password: passwordSchema,
-      confirm_new_password: confirmPasswordSchema,
+      password: passwordSchema,
+      confirm_password: confirmPasswordSchema,
       forgot_password_token: forgotPasswordTokenSchema
     },
     ['body']

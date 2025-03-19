@@ -1,0 +1,2 @@
+ValidationAction = 'Error'
+ValidationLevel = 'Strict'
