@@ -44,6 +44,7 @@ export const USERS_MESSAGES = {
 
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or does not exist',
   USER_NOT_FOUND: 'User not found',
+  USER_NOT_VERIFIED: 'User not verified',
 
   VALIDATION_ERROR: 'Validation error',
   VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success',

@@ -25,7 +25,7 @@ export const loginController = async (
 ): Promise<void> => {
   const user = req.user as User
   const user_id = user._id as Object
-  const result = await userService.login(user_id.toString())
+  const result = await userService.login({ user_id: user_id.toString(), verify: user.verify })
   res.json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
     result
@@ -114,8 +114,8 @@ export const forgotPasswordController = async (
   req: Request<ParamsDictionary, any, ForgotPasswordRequestBody>,
   res: Response
 ): Promise<void> => {
-  const { _id } = req.user as User
-  const result = await userService.forgotPassword(_id.toString())
+  const { _id, verify } = req.user as User
+  const result = await userService.forgotPassword({ user_id: _id.toString(), verify })
   res.json({
     result
   })
@@ -144,11 +144,23 @@ export const resetPasswordController = async (
   })
 }
 
-export const getMeController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getMeController = async (
+  req: Request, 
+  res: Response, 
+  next: NextFunction
+): Promise<void> => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const user = await userService.getMe(user_id)
   res.json({
     msg: USERS_MESSAGES.GET_ME_SUCCESS,
     result: user
   })
+}
+
+export const updateMeController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  res.json({})
 }

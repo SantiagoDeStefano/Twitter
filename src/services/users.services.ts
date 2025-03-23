@@ -9,15 +9,17 @@ import { config } from 'dotenv'
 import User from '~/models/schemas/user.schema'
 import DatabaseService from './database.services'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
+import { verify } from 'jsonwebtoken'
 
 config()
 
 class UserService {
-  private signAccessToken(user_id: string): Promise<string> {
+  private signAccessToken({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }): Promise<string> {
     return signToken({
       payload: {
         user_id,
-        token_type: TokenType.AccessToken
+        token_type: TokenType.AccessToken,
+        verify
       },
       privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
       options: {
@@ -26,11 +28,12 @@ class UserService {
     }) as Promise<string>
   }
 
-  private signRefreshToken(user_id: string): Promise<string> {
+  private signRefreshToken({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }): Promise<string> {
     return signToken({
       payload: {
         user_id,
-        token_type: TokenType.RefreshToken
+        token_type: TokenType.RefreshToken,
+        verify
       },
       privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
       options: {
@@ -39,17 +42,18 @@ class UserService {
     }) as Promise<string>
   }
 
-  private async signAccessAndRefreshToken(user_id: string): Promise<[string, string]> {
-    const access_token = await this.signAccessToken(user_id)
-    const refresh_token = await this.signRefreshToken(user_id)
+  private async signAccessAndRefreshToken({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }): Promise<[string, string]> {
+    const access_token = await this.signAccessToken({ user_id, verify })
+    const refresh_token = await this.signRefreshToken({ user_id, verify })
     return [access_token, refresh_token]
   }
 
-  private signEmailVerifyToken(user_id: string): Promise<string> {
+  private signEmailVerifyToken({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }): Promise<string> {
     return signToken({
       payload: {
         user_id,
-        token_type: TokenType.EmailVerifyToken
+        token_type: TokenType.EmailVerifyToken,
+        verify
       },
       privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
       options: {
@@ -58,8 +62,8 @@ class UserService {
     }) as Promise<string>
   }
 
-  async login(user_id: string) {
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken(user_id)
+  async login({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }) {
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, verify: UserVerifyStatus.Verified })
     await DatabaseService.refreshToken.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
     )
@@ -71,7 +75,7 @@ class UserService {
 
   async register(payload: RegisterRequestBody) {
     const user_id = new ObjectId()
-    const email_verify_token = await this.signEmailVerifyToken(user_id.toString())
+    const email_verify_token = await this.signEmailVerifyToken({ user_id: user_id.toString(), verify: UserVerifyStatus.Unverified })
     await DatabaseService.user.insertOne(
       new User({
         ...payload,
@@ -81,7 +85,7 @@ class UserService {
         password: hashPassword(payload.password)
       })
     )
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken(user_id.toString())
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id: user_id.toString(), verify: UserVerifyStatus.Unverified })
     await DatabaseService.refreshToken.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
     )
@@ -108,7 +112,7 @@ class UserService {
     //Declare update value
     //MongoDB update the value
     const [tokens] = await Promise.all([
-      this.signAccessAndRefreshToken(user_id),
+      this.signAccessAndRefreshToken({ user_id, verify: UserVerifyStatus.Verified }),
 
       DatabaseService.user.updateOne({ _id: new ObjectId(user_id) }, [
         {
@@ -130,7 +134,7 @@ class UserService {
   }
 
   async resendEmailVerifyToken(user_id: string) {
-    const email_verify_token = await this.signEmailVerifyToken(user_id)
+    const email_verify_token = await this.signEmailVerifyToken({user_id, verify: UserVerifyStatus.Unverified})
     //Fake resend email
     console.log('Resend verify email: ', email_verify_token)
 
@@ -148,11 +152,12 @@ class UserService {
     }
   }
 
-  async signForgotPasswordToken(user_id: string): Promise<string> {
+  async signForgotPasswordToken({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }): Promise<string> {
     return signToken({
       payload: {
         user_id,
-        token_type: TokenType.ForgotPasswordToken
+        token_type: TokenType.ForgotPasswordToken,
+        verify
       },
       privateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
       options: {
@@ -161,8 +166,8 @@ class UserService {
     }) as Promise<string>
   }
 
-  async forgotPassword(user_id: string) {
-    const forgot_password_token = await this.signForgotPasswordToken(user_id)
+  async forgotPassword({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus}) {
+    const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
     await DatabaseService.user.updateOne({ _id: new ObjectId(user_id) }, [
       {
         $set: {
