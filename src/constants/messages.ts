@@ -1,11 +1,18 @@
 export const USERS_MESSAGES = {
   ACCESS_TOKEN_REQUIRED: 'Access token is required',
+  AVATAR_MUST_BE_A_STRING: 'Avatar must be a string',
+  AVATAR_MUST_BE_BETWEEN_1_AND_200: 'Avatar must be between 1 and 200',
+
+  BIO_MUST_BE_A_STRING: 'Bio must be a string',
+  BIO_LENGTH_MUST_BE_BETWEEN_1_AND_100: 'Bio must be between 1 and 100',
 
   CHECK_YOUR_EMAIL_FOR_RESET_PASSWORD: 'Check your email for reset password',
   CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD: 'Password confirmation does not match password',
   CONFIRM_PASSWORD_IS_REQUIRED: 'Password confirmation is required',
   CONFIRM_PASSWORD_MUST_BE_A_STRING: 'Password confirmation must be a string',
   CONFIRM_PASSWORD_MUST_BE_FROM_8_TO_16: 'Password confirmation must be between 8 and 16',
+  COVER_PHOTO_MUST_BE_A_STRING: 'Cover photo must be a string',
+  COVER_PHOTO_MUST_BE_BETWEEN_1_AND_400: 'Cover photo must be between 1 and 400',
 
   DATE_OF_BIRTH_IS_REQUIRED: 'Date of birth is required',
 
@@ -27,6 +34,8 @@ export const USERS_MESSAGES = {
 
   LOGIN_SUCCESS: 'Login success',
   LOGOUT_SUCCESS: 'Logout success',
+  LOCATION_MUST_BE_A_STRING: 'Location must be a string',
+  LOCATION_LENGTH_MUST_BE_BETWEEN_1_AND_100: 'Location length must be between 1 and 100',
 
   NAME_IS_REQUIRED: 'Name is required',
   NAME_LENGTH_MUST_BE_FROM_3_TO_100: 'Name length must be from 3 to 100',
@@ -45,9 +54,14 @@ export const USERS_MESSAGES = {
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or does not exist',
   USER_NOT_FOUND: 'User not found',
   USER_NOT_VERIFIED: 'User not verified',
+  USERNAME_MUST_BE_A_STRING: 'Username must be a string',
+  USERNAME_MUST_BE_BETWEEN_1_AND_50: 'Username must be between 1 and 50',
 
   VALIDATION_ERROR: 'Validation error',
   VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success',
+
+  WEBSITE_MUST_BE_A_STRING: 'Website must be a string',
+  WEBSITE_LENGTH_MUST_BE_BETWEEN_1_AND_200: 'Website must be between 1 and 200',
 
   STRONG_PASSWORD: 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character',
 } as const

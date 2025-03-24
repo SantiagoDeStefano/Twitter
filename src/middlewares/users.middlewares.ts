@@ -98,6 +98,32 @@ const forgotPasswordTokenSchema: ParamSchema = {
   }
 }
 
+const nameSchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: USERS_MESSAGES.NAME_IS_REQUIRED
+  },
+  isString: {
+    errorMessage: USERS_MESSAGES.NAME_MUST_BE_A_STRING
+  },
+  isLength: {
+    options: {
+      min: 3,
+      max: 100
+    },
+    errorMessage: USERS_MESSAGES.NAME_LENGTH_MUST_BE_FROM_3_TO_100
+  },
+  trim: true
+}
+
+const dateOfBirthSchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_REQUIRED
+  },
+  isISO8601: {
+    errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_REQUIRED
+  }
+}
+
 export const loginValidator = validate(
   checkSchema(
     {
@@ -166,14 +192,7 @@ export const registerValidator = validate(
       },
       password: passwordSchema,
       confirm_password: confirmPasswordSchema,
-      date_of_birth: {
-        notEmpty: {
-          errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_REQUIRED
-        },
-        isISO8601: {
-          errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_REQUIRED
-        }
-      }
+      date_of_birth: dateOfBirthSchema
     },
     ['body']
   )
@@ -335,20 +354,119 @@ export const resetPasswordValidator = validate(
   )
 )
 
-export const verifiedUserValidator = async (
-  req: Request, 
-  res: Response, 
-  next: NextFunction
-) => {
+export const verifiedUserValidator = async (req: Request, res: Response, next: NextFunction) => {
   const { verify } = req.decoded_authorization as TokenPayload
-  const { user_id } = req.decoded_authorization as TokenPayload;
-  console.log(user_id);
-  console.log(verify);
+  const { user_id } = req.decoded_authorization as TokenPayload
+  console.log(user_id)
+  console.log(verify)
   if (verify != UserVerifyStatus.Verified) {
-      return next(new ErrorWithStatus({
+    return next(
+      new ErrorWithStatus({
         message: USERS_MESSAGES.USER_NOT_VERIFIED,
         status: HTTP_STATUS.FORBIDDEN
-      }))
+      })
+    )
   }
   next()
 }
+
+export const  updateMeValidator = validate(
+  checkSchema(
+    {
+      name: {
+        ...nameSchema,
+        optional: true,
+        notEmpty: undefined
+      },
+      date_of_birth: {
+        ...dateOfBirthSchema,
+        optional: true
+      },
+      bio: {
+        trim: true,
+        optional: true,
+        isString: {
+          errorMessage: USERS_MESSAGES.BIO_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 1,
+            max: 100,
+          },
+          errorMessage: USERS_MESSAGES.BIO_LENGTH_MUST_BE_BETWEEN_1_AND_100
+        }
+      },
+      location: {
+        trim: true,
+        optional: true,
+        isString: {
+          errorMessage: USERS_MESSAGES.LOCATION_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 1,
+            max: 100,
+          },
+          errorMessage: USERS_MESSAGES.LOCATION_LENGTH_MUST_BE_BETWEEN_1_AND_100
+        }
+      },
+      website: {
+        trim: true,
+        optional: true,
+        isString: {
+          errorMessage: USERS_MESSAGES.WEBSITE_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 1,
+            max: 200,
+          },
+          errorMessage: USERS_MESSAGES.WEBSITE_LENGTH_MUST_BE_BETWEEN_1_AND_200
+        }
+      },
+      username: {
+        trim: true,
+        optional: true,
+        isString: {
+          errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 1,
+            max: 50,
+          },
+          errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_BETWEEN_1_AND_50
+        }
+      },
+      avatar: {
+        trim: true,
+        optional: true,
+        isString: {
+          errorMessage: USERS_MESSAGES.AVATAR_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 1,
+            max: 200,
+          },
+          errorMessage: USERS_MESSAGES.AVATAR_MUST_BE_BETWEEN_1_AND_200
+        }
+      },
+      cover_photo: {
+        trim: true,
+        optional: true,
+        isString: {
+          errorMessage: USERS_MESSAGES.COVER_PHOTO_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 1,
+            max: 400,
+          },
+          errorMessage: USERS_MESSAGES.COVER_PHOTO_MUST_BE_BETWEEN_1_AND_400
+        }
+      },
+    },
+    ['body']
+  )
+)
