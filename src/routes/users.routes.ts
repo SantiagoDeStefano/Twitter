@@ -139,7 +139,7 @@ usersRouter.post(
  * Method: GET
  * Headers: { Authorization: Bearer <access_token> }
 */
-usersRouter.get(
+usersRouter.patch(
   '/me', 
   accessTokenValidator,
   verifiedUserValidator, 

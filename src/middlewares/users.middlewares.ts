@@ -335,15 +335,20 @@ export const resetPasswordValidator = validate(
   )
 )
 
-export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
+export const verifiedUserValidator = async (
+  req: Request, 
+  res: Response, 
+  next: NextFunction
+) => {
   const { verify } = req.decoded_authorization as TokenPayload
+  const { user_id } = req.decoded_authorization as TokenPayload;
+  console.log(user_id);
+  console.log(verify);
   if (verify != UserVerifyStatus.Verified) {
-    return next(
-      new ErrorWithStatus({
+      return next(new ErrorWithStatus({
         message: USERS_MESSAGES.USER_NOT_VERIFIED,
         status: HTTP_STATUS.FORBIDDEN
-      })
-    )
+      }))
   }
   next()
 }

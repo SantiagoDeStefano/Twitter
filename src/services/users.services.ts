@@ -14,7 +14,7 @@ import { verify } from 'jsonwebtoken'
 config()
 
 class UserService {
-  private signAccessToken({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }): Promise<string> {
+  private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }): Promise<string> {
     return signToken({
       payload: {
         user_id,
@@ -28,7 +28,7 @@ class UserService {
     }) as Promise<string>
   }
 
-  private signRefreshToken({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }): Promise<string> {
+  private signRefreshToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }): Promise<string> {
     return signToken({
       payload: {
         user_id,
@@ -42,13 +42,19 @@ class UserService {
     }) as Promise<string>
   }
 
-  private async signAccessAndRefreshToken({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }): Promise<[string, string]> {
+  private async signAccessAndRefreshToken({
+    user_id,
+    verify
+  }: {
+    user_id: string
+    verify: UserVerifyStatus
+  }): Promise<[string, string]> {
     const access_token = await this.signAccessToken({ user_id, verify })
     const refresh_token = await this.signRefreshToken({ user_id, verify })
     return [access_token, refresh_token]
   }
 
-  private signEmailVerifyToken({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }): Promise<string> {
+  private signEmailVerifyToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }): Promise<string> {
     return signToken({
       payload: {
         user_id,
@@ -62,8 +68,8 @@ class UserService {
     }) as Promise<string>
   }
 
-  async login({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }) {
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, verify: UserVerifyStatus.Verified })
+  async login({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, verify: verify })
     await DatabaseService.refreshToken.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
     )
@@ -75,7 +81,10 @@ class UserService {
 
   async register(payload: RegisterRequestBody) {
     const user_id = new ObjectId()
-    const email_verify_token = await this.signEmailVerifyToken({ user_id: user_id.toString(), verify: UserVerifyStatus.Unverified })
+    const email_verify_token = await this.signEmailVerifyToken({
+      user_id: user_id.toString(),
+      verify: UserVerifyStatus.Unverified
+    })
     await DatabaseService.user.insertOne(
       new User({
         ...payload,
@@ -85,7 +94,10 @@ class UserService {
         password: hashPassword(payload.password)
       })
     )
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id: user_id.toString(), verify: UserVerifyStatus.Unverified })
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
+      user_id: user_id.toString(),
+      verify: UserVerifyStatus.Unverified
+    })
     await DatabaseService.refreshToken.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
     )
@@ -134,7 +146,7 @@ class UserService {
   }
 
   async resendEmailVerifyToken(user_id: string) {
-    const email_verify_token = await this.signEmailVerifyToken({user_id, verify: UserVerifyStatus.Unverified})
+    const email_verify_token = await this.signEmailVerifyToken({ user_id, verify: UserVerifyStatus.Unverified })
     //Fake resend email
     console.log('Resend verify email: ', email_verify_token)
 
@@ -152,7 +164,7 @@ class UserService {
     }
   }
 
-  async signForgotPasswordToken({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus }): Promise<string> {
+  async signForgotPasswordToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }): Promise<string> {
     return signToken({
       payload: {
         user_id,
@@ -166,7 +178,7 @@ class UserService {
     }) as Promise<string>
   }
 
-  async forgotPassword({ user_id, verify } :{ user_id: string, verify: UserVerifyStatus}) {
+  async forgotPassword({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
     const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
     await DatabaseService.user.updateOne({ _id: new ObjectId(user_id) }, [
       {
@@ -199,14 +211,15 @@ class UserService {
   }
 
   async resetPassword(user_id: string, new_password: string) {
-    await DatabaseService.user.updateOne({ _id: new ObjectId(user_id) }, 
-    [{
-      $set: {
-        password: hashPassword(new_password),
-        forgot_password_token: '',
-        updated_at: '$$NOW'
+    await DatabaseService.user.updateOne({ _id: new ObjectId(user_id) }, [
+      {
+        $set: {
+          password: hashPassword(new_password),
+          forgot_password_token: '',
+          updated_at: '$$NOW'
+        }
       }
-    }])
+    ])
     return {
       message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS
     }
