@@ -1,4 +1,4 @@
-import { RegisterRequestBody } from '~/models/requests/users.requests'
+import { RegisterRequestBody, UpdateMeRequestBody } from '~/models/requests/users.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
 import { TokenType, UserVerifyStatus } from '~/constants/enums'
@@ -223,6 +223,23 @@ class UserService {
     return {
       message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS
     }
+  }
+
+  async updateMe(user_id: string, payload: UpdateMeRequestBody) {
+    //Find one and update se tra ve cho nguoi dung
+    const payload_date_of_birth = payload.date_of_birth ? { ...payload, date_of_birth: new Date(payload.date_of_birth) } : payload
+    const user = await DatabaseService.user.findOneAndUpdate(
+      {_id: new ObjectId(user_id)},
+      {
+        $set: {
+          ...(payload_date_of_birth as UpdateMeRequestBody & { date_of_birth?: Date })
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      }
+    )
+    return user;
   }
 }
 

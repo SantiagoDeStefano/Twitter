@@ -115,6 +115,21 @@ const nameSchema: ParamSchema = {
   trim: true
 }
 
+const imageSchema: ParamSchema = {
+  trim: true,
+  optional: true,
+  isString: {
+    errorMessage: USERS_MESSAGES.IMAGE_URL_MUST_BE_A_STRING
+  },
+  isLength: {
+    options: {
+      min: 1,
+      max: 400,
+    },
+    errorMessage: USERS_MESSAGES.IMAGE_URL_MUST_BE_BETWEEN_1_AND_400
+  }
+}
+
 const dateOfBirthSchema: ParamSchema = {
   notEmpty: {
     errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_REQUIRED
@@ -200,8 +215,8 @@ export const registerValidator = validate(
 
 export const accessTokenValidator = validate(
   checkSchema(
-    {
-      Authorization: {
+  {
+    Authorization: {
         custom: {
           options: async (value: string, { req }) => {
             const access_token = (value || '').split(' ')[1]
@@ -383,11 +398,11 @@ export const  updateMeValidator = validate(
         optional: true
       },
       bio: {
-        trim: true,
         optional: true,
         isString: {
           errorMessage: USERS_MESSAGES.BIO_MUST_BE_A_STRING
         },
+        trim: true,
         isLength: {
           options: {
             min: 1,
@@ -438,34 +453,8 @@ export const  updateMeValidator = validate(
           errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_BETWEEN_1_AND_50
         }
       },
-      avatar: {
-        trim: true,
-        optional: true,
-        isString: {
-          errorMessage: USERS_MESSAGES.AVATAR_MUST_BE_A_STRING
-        },
-        isLength: {
-          options: {
-            min: 1,
-            max: 200,
-          },
-          errorMessage: USERS_MESSAGES.AVATAR_MUST_BE_BETWEEN_1_AND_200
-        }
-      },
-      cover_photo: {
-        trim: true,
-        optional: true,
-        isString: {
-          errorMessage: USERS_MESSAGES.COVER_PHOTO_MUST_BE_A_STRING
-        },
-        isLength: {
-          options: {
-            min: 1,
-            max: 400,
-          },
-          errorMessage: USERS_MESSAGES.COVER_PHOTO_MUST_BE_BETWEEN_1_AND_400
-        }
-      },
+      avatar: imageSchema,
+      cover_photo: imageSchema
     },
     ['body']
   )

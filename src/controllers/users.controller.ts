@@ -8,7 +8,8 @@ import {
   RegisterRequestBody,
   TokenPayload,
   VerifyEmailRequestBody,
-  VerifyForgotPasswordRequestBody 
+  VerifyForgotPasswordRequestBody, 
+  UpdateMeRequestBody
 } from '~/models/requests/users.requests'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { UserVerifyStatus } from '~/constants/enums'
@@ -158,9 +159,15 @@ export const getMeController = async (
 }
 
 export const updateMeController = async (
-  req: Request,
+  req: Request<ParamsDictionary, any, UpdateMeRequestBody>,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  res.json({})
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { body } = req
+  const user = await userService.updateMe(user_id, body)
+  res.json({
+    message: USERS_MESSAGES.UPDATE_ME_SUCCESS,
+    result: user
+  })
 }

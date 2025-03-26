@@ -1,7 +1,5 @@
 export const USERS_MESSAGES = {
   ACCESS_TOKEN_REQUIRED: 'Access token is required',
-  AVATAR_MUST_BE_A_STRING: 'Avatar must be a string',
-  AVATAR_MUST_BE_BETWEEN_1_AND_200: 'Avatar must be between 1 and 200',
 
   BIO_MUST_BE_A_STRING: 'Bio must be a string',
   BIO_LENGTH_MUST_BE_BETWEEN_1_AND_100: 'Bio must be between 1 and 100',
@@ -11,8 +9,6 @@ export const USERS_MESSAGES = {
   CONFIRM_PASSWORD_IS_REQUIRED: 'Password confirmation is required',
   CONFIRM_PASSWORD_MUST_BE_A_STRING: 'Password confirmation must be a string',
   CONFIRM_PASSWORD_MUST_BE_FROM_8_TO_16: 'Password confirmation must be between 8 and 16',
-  COVER_PHOTO_MUST_BE_A_STRING: 'Cover photo must be a string',
-  COVER_PHOTO_MUST_BE_BETWEEN_1_AND_400: 'Cover photo must be between 1 and 400',
 
   DATE_OF_BIRTH_IS_REQUIRED: 'Date of birth is required',
 
@@ -31,6 +27,8 @@ export const USERS_MESSAGES = {
   GET_ME_SUCCESS: 'Get my profile success',
 
   INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
+  IMAGE_URL_MUST_BE_A_STRING: 'Image URL must be a string',
+  IMAGE_URL_MUST_BE_BETWEEN_1_AND_400: 'Image URL must be between 1 and 400',
 
   LOGIN_SUCCESS: 'Login success',
   LOGOUT_SUCCESS: 'Logout success',
@@ -56,6 +54,7 @@ export const USERS_MESSAGES = {
   USER_NOT_VERIFIED: 'User not verified',
   USERNAME_MUST_BE_A_STRING: 'Username must be a string',
   USERNAME_MUST_BE_BETWEEN_1_AND_50: 'Username must be between 1 and 50',
+  UPDATE_ME_SUCCESS: 'Update me success',
 
   VALIDATION_ERROR: 'Validation error',
   VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success',
