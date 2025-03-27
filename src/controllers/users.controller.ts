@@ -15,6 +15,7 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import { UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 
+import { pick } from 'lodash'
 import HTTP_STATUS from '~/constants/httpStatus'
 import DatabaseService from '~/services/database.services'
 import User from '~/models/schemas/user.schema'
@@ -164,6 +165,8 @@ export const updateMeController = async (
   next: NextFunction
 ): Promise<void> => {
   const { user_id } = req.decoded_authorization as TokenPayload
+  
+  //The api only allows to update these fields, preventing any unwanted fields
   const { body } = req
   const user = await userService.updateMe(user_id, body)
   res.json({
