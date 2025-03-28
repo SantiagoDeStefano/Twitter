@@ -17,6 +17,10 @@ export interface UpdateMeRequestBody {
   cover_photo?: string
 }
 
+export interface GetProfileRequestParams {
+  username: string
+}
+
 export interface RegisterRequestBody {
   name: string
   email: string

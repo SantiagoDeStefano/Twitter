@@ -2,10 +2,12 @@ import {
   Request, 
   Response, 
   NextFunction, 
-  RequestHandler } from "express"
+  RequestHandler 
+} 
+from "express"
 
-export const wrapRequestHandler = (func: RequestHandler) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+export const wrapRequestHandler = <P>(func: RequestHandler<P>) => {
+  return async (req: Request<P>, res: Response, next: NextFunction) => {
     try {
       await func(req, res, next)
     }
@@ -15,3 +17,6 @@ export const wrapRequestHandler = (func: RequestHandler) => {
     }
   }
 }
+
+// Mong muốn nhận vào là: Request<{ username : string }>
+// Thực nhận: Request<{[key: string]: string}>

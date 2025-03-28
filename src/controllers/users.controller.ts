@@ -8,8 +8,9 @@ import {
   RegisterRequestBody,
   TokenPayload,
   VerifyEmailRequestBody,
-  VerifyForgotPasswordRequestBody, 
-  UpdateMeRequestBody
+  VerifyForgotPasswordRequestBody,
+  UpdateMeRequestBody,
+  GetProfileRequestParams
 } from '~/models/requests/users.requests'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { UserVerifyStatus } from '~/constants/enums'
@@ -146,11 +147,7 @@ export const resetPasswordController = async (
   })
 }
 
-export const getMeController = async (
-  req: Request, 
-  res: Response, 
-  next: NextFunction
-): Promise<void> => {
+export const getMeController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const user = await userService.getMe(user_id)
   res.json({
@@ -165,12 +162,30 @@ export const updateMeController = async (
   next: NextFunction
 ): Promise<void> => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  
+
   //The api only allows to update these fields, preventing any unwanted fields
   const { body } = req
   const user = await userService.updateMe(user_id, body)
   res.json({
     message: USERS_MESSAGES.UPDATE_ME_SUCCESS,
+    result: user
+  })
+}
+
+export const getProfileController = async (
+  // req: Request<{ username: string}>,
+  req: Request<GetProfileRequestParams>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  //req.params is the params in the url, for example: /users/:username
+  //So we can get the username from req.params.username
+
+  //Don't need username validator because username always string
+  const { username } = req.params
+  const user = await userService.getProfile(username)
+  res.json({
+    message: USERS_MESSAGES.GET_PROFILE_SUCCESS,
     result: user
   })
 }

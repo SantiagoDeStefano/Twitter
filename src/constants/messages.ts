@@ -25,6 +25,7 @@ export const USERS_MESSAGES = {
   FORGOT_PASSWORD_TOKEN_REQUIRED: 'Forgot password token is required',
 
   GET_ME_SUCCESS: 'Get my profile success',
+  GET_PROFILE_SUCCESS: 'Get profile success',
 
   INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
   IMAGE_URL_MUST_BE_A_STRING: 'Image URL must be a string',

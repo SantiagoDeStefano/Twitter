@@ -25,7 +25,8 @@ import {
   forgotPasswordController,
   resetPasswordController,
   getMeController,
-  updateMeController
+  updateMeController,
+  getProfileController
 } from '../controllers/users.controller'
 
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -142,6 +143,18 @@ usersRouter.post(
  * Method: GET
  * Headers: { Authorization: Bearer <access_token> }
 */
+usersRouter.get(
+  '/me', 
+  accessTokenValidator,
+  wrapRequestHandler(getMeController)
+)
+
+/*
+ * Description: Update my profile
+ * Path: /me
+ * Method: PATCH
+ * Headers: { Authorization: Bearer <access_token> }
+*/
 usersRouter.patch(
   '/me', 
   accessTokenValidator,
@@ -156,9 +169,18 @@ usersRouter.patch(
     'username', 
     'avatar', 
     'cover_photo',
-
   ]), 
   wrapRequestHandler(updateMeController)
+) 
+
+/*
+ * Description: Get user profile
+ * Path: /:username
+ * Method: GET
+*/
+usersRouter.get(
+  '/:username', 
+  wrapRequestHandler(getProfileController)
 ) 
 
 export default usersRouter
