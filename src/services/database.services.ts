@@ -1,5 +1,12 @@
-import { Collection, Db, MongoClient, ServerApiVersion } from 'mongodb'
+import { 
+  Collection, 
+  Db, 
+  MongoClient, 
+  ServerApiVersion 
+} 
+from 'mongodb'
 import { config } from 'dotenv'
+
 import User from '../models/schemas/user.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 

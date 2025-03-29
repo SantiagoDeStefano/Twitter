@@ -230,9 +230,11 @@ class UserService {
 
   async updateMe(user_id: string, payload: UpdateMeRequestBody) {
     //Find one and update se tra ve cho nguoi dung
-    const payload_date_of_birth = payload.date_of_birth ? { ...payload, date_of_birth: new Date(payload.date_of_birth) } : payload
+    const payload_date_of_birth = payload.date_of_birth
+      ? { ...payload, date_of_birth: new Date(payload.date_of_birth) }
+      : payload
     const user = await DatabaseService.user.findOneAndUpdate(
-      {_id: new ObjectId(user_id)},
+      { _id: new ObjectId(user_id) },
       {
         $set: {
           ...(payload_date_of_birth as UpdateMeRequestBody & { date_of_birth?: Date })
@@ -242,7 +244,7 @@ class UserService {
         }
       }
     )
-    return user;
+    return user
   }
 
   async getProfile(username: string) {
@@ -259,7 +261,7 @@ class UserService {
         }
       }
     )
-    if(user === null) {
+    if (user === null) {
       throw new ErrorWithStatus({
         message: USERS_MESSAGES.USER_NOT_FOUND,
         status: HTTP_STATUS.NOT_FOUND
