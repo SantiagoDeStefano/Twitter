@@ -26,7 +26,8 @@ import {
   resetPasswordController,
   getMeController,
   updateMeController,
-  getProfileController
+  getProfileController,
+  followController
 } from '../controllers/users.controller'
 
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -106,11 +107,11 @@ usersRouter.post(
  * Method: POST
  * Body: { email: string }
  */
-usersRouter.post(
-  '/forgot-password', 
-  forgotPasswordValidator,
-  wrapRequestHandler(forgotPasswordController)
-) 
+  usersRouter.post(
+    '/forgot-password', 
+    forgotPasswordValidator,
+    wrapRequestHandler(forgotPasswordController)
+  ) 
 
 
 /**
@@ -181,6 +182,20 @@ usersRouter.patch(
 usersRouter.get(
   '/:username', 
   wrapRequestHandler(getProfileController)
+) 
+
+/*
+ * Description: Follow someone
+ * Path: /:username
+ * Method: POST
+ * Header: { Authorization: Bearer <access_token> }
+ * Body: { user_id: string }
+*/
+usersRouter.get(
+  '/:username', 
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapRequestHandler(followController)
 ) 
 
 export default usersRouter

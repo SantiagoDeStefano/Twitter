@@ -1,0 +1,1 @@
+Everything started from register route, so this documentation will begin from that route.

@@ -10,7 +10,8 @@ import {
   VerifyEmailRequestBody,
   VerifyForgotPasswordRequestBody,
   UpdateMeRequestBody,
-  GetProfileRequestParams
+  GetProfileRequestParams,
+  FollowRequestBody
 } from '~/models/requests/users.requests'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { UserVerifyStatus } from '~/constants/enums'
@@ -188,4 +189,12 @@ export const getProfileController = async (
     message: USERS_MESSAGES.GET_PROFILE_SUCCESS,
     result: user
   })
+}
+
+export const followController = async (
+  req: Request<ParamsDictionary, any, FollowRequestBody>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const { user_id } = req.decoded_authorization as TokenPayload
 }

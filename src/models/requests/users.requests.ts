@@ -17,6 +17,10 @@ export interface UpdateMeRequestBody {
   cover_photo?: string
 }
 
+export interface FollowRequestBody {
+  user_id: string
+}
+
 export interface GetProfileRequestParams {
   username: string
 }
