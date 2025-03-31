@@ -1,4 +1,4 @@
-import { check, checkSchema, ParamSchema } from 'express-validator'
+import { checkSchema, ParamSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { hashPassword } from '~/utils/crypto'
@@ -74,18 +74,21 @@ const forgotPasswordTokenSchema: ParamSchema = {
         })
         const { user_id } = decoded_forgot_password_token
         const user = await DatabaseService.user.findOne({ _id: new ObjectId(user_id) })
+
         if (!user) {
           throw new ErrorWithStatus({
             message: USERS_MESSAGES.USER_NOT_FOUND,
             status: HTTP_STATUS.NOT_FOUND
           })
         }
+
         if (user.forgot_password_token != value) {
           throw new ErrorWithStatus({
             message: USERS_MESSAGES.INVALID_FORGOT_PASSWORD_TOKEN,
             status: HTTP_STATUS.UNAUTHORIZED
           })
         }
+        
         req.decoded_forgot_password_token = decoded_forgot_password_token
       } catch (error) {
         throw new ErrorWithStatus({
@@ -260,7 +263,7 @@ export const refreshTokenValidator = validate(
               })
             }
             try {
-              const [decode_refresh_token, refresh_token] = await Promise.all([
+              const [decoded_refresh_token, refresh_token] = await Promise.all([
                 verifyToken({
                   token: value,
                   secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
@@ -273,7 +276,7 @@ export const refreshTokenValidator = validate(
                   status: HTTP_STATUS.UNAUTHORIZED
                 })
               }
-              req.decode_refresh_token = decode_refresh_token
+              req.decoded_refresh_token = decoded_refresh_token
             } catch (error) {
               if (error instanceof JsonWebTokenError) {
                 throw new ErrorWithStatus({

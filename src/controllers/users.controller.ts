@@ -17,7 +17,6 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import { UserVerifyStatus } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 
-import { pick } from 'lodash'
 import HTTP_STATUS from '~/constants/httpStatus'
 import DatabaseService from '~/services/database.services'
 import User from '~/models/schemas/user.schema'

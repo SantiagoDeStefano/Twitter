@@ -1,15 +1,18 @@
 import { 
   validationResult, 
-  ValidationChain } from 'express-validator'
+  ValidationChain 
+} 
+from 'express-validator'
 import { RunnableValidationChains } from 'express-validator/lib/middlewares/schema'
-
-import HTTP_STATUS from '~/constants/httpStatus'
 import ErrorWithStatus, { EntityError } from '~/models/Errors'
+
 import express from 'express'
+import HTTP_STATUS from '~/constants/httpStatus'
 
 // can be reused by many routes
 export const validate = (validations: RunnableValidationChains<ValidationChain>) => {
   return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    
     await validations.run(req)
 
     const errors = validationResult(req)
@@ -17,7 +20,8 @@ export const validate = (validations: RunnableValidationChains<ValidationChain>)
     if (errors.isEmpty()) {
       return next()
     }
-    const errorsObject = errors.mapped()
+    
+    const errorsObject = errors.mapped() // Converts errors to an object
     const entityError = new EntityError({ errors: {}})
 
     for (const key in errorsObject) {

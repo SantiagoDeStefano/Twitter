@@ -9,7 +9,6 @@ import { config } from 'dotenv'
 import User from '~/models/schemas/user.schema'
 import DatabaseService from './database.services'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
-import { verify } from 'jsonwebtoken'
 import ErrorWithStatus from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 
@@ -102,7 +101,10 @@ class UserService {
       verify: UserVerifyStatus.Unverified
     })
     await DatabaseService.refreshToken.insertOne(
-      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
+      new RefreshToken({ 
+        user_id: new ObjectId(user_id), 
+        token: refresh_token 
+      })
     )
     return {
       access_token,

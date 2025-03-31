@@ -372,3 +372,36 @@ Thus, properly formatting the request header as follows ensures seamless authent
 - If you simply delete the access token and refresh token from the client’s storage without calling the logout API, you will still be logged out. However, this approach is not secure. The refresh token will still exist in the database, and if a hacker gains access to your refresh token, they can still generate a new access token.
 
 - For better security, it is recommended to call the logout API, which should invalidate the refresh token on the server side, ensuring that it can no longer be used to obtain new access tokens.
+
+## Continue with `register` logic:
+
+```
+const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
+  user_id: user_id.toString(),
+  verify: UserVerifyStatus.Unverified
+})
+```
+
+- Return `access token` and `refresh token` to the user, created with `user_id` and `unverify` status.
+
+- Meaning we can get `user_id` when decode the `token`.
+
+```
+await DatabaseService.refreshToken.insertOne(
+  new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
+)
+```
+
+- Assign `refresh token` for each unique `user_id`.
+
+```
+return {
+  access_token,
+  refresh_token,
+  email_verify_token
+}
+```
+
+- Return `JWT token` for user.
+
+- `email_verify_token` would be used later.
