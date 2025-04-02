@@ -6,11 +6,12 @@ import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { config } from 'dotenv'
 
-import User from '~/models/schemas/user.schema'
-import DatabaseService from './database.services'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
+import User from '~/models/schemas/User.schema'
+import DatabaseService from './database.services'
 import ErrorWithStatus from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
+import { result } from 'lodash'
 
 config()
 
@@ -101,9 +102,9 @@ class UserService {
       verify: UserVerifyStatus.Unverified
     })
     await DatabaseService.refreshToken.insertOne(
-      new RefreshToken({ 
-        user_id: new ObjectId(user_id), 
-        token: refresh_token 
+      new RefreshToken({
+        user_id: new ObjectId(user_id),
+        token: refresh_token
       })
     )
     return {
@@ -270,6 +271,27 @@ class UserService {
       })
     }
     return user
+  }
+
+  async follow(user_id: string, followed_user_id: string) {
+    const follower = await DatabaseService.followers.findOne({
+      user_id: new ObjectId(user_id),
+      followed_user_id: new ObjectId(followed_user_id)
+    })
+
+    if (follower != null) {
+      return {
+        message: USERS_MESSAGES.ALREADY_FOLLOWED
+      }
+    }
+
+    await DatabaseService.followers.insertOne({
+      user_id: new ObjectId(user_id),
+      followed_user_id: new ObjectId(followed_user_id)
+    })
+    return {
+      message: USERS_MESSAGES.FOLLOW_SUCCESS
+    }
   }
 }
 

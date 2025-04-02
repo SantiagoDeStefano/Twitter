@@ -18,7 +18,7 @@ export interface UpdateMeRequestBody {
 }
 
 export interface FollowRequestBody {
-  user_id: string
+  followed_user_id: string
 }
 
 export interface GetProfileRequestParams {

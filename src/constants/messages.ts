@@ -1,5 +1,6 @@
 export const USERS_MESSAGES = {
   ACCESS_TOKEN_REQUIRED: 'Access token is required',
+  ALREADY_FOLLOWED: 'Already followed',
 
   BIO_MUST_BE_A_STRING: 'Bio must be a string',
   BIO_LENGTH_MUST_BE_BETWEEN_1_AND_100: 'Bio must be between 1 and 100',
@@ -23,6 +24,7 @@ export const USERS_MESSAGES = {
   EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
 
   FORGOT_PASSWORD_TOKEN_REQUIRED: 'Forgot password token is required',
+  FOLLOW_SUCCESS: 'Follow success',
 
   GET_ME_SUCCESS: 'Get my profile success',
   GET_PROFILE_SUCCESS: 'Get profile success',
@@ -30,6 +32,7 @@ export const USERS_MESSAGES = {
   INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
   IMAGE_URL_MUST_BE_A_STRING: 'Image URL must be a string',
   IMAGE_URL_MUST_BE_BETWEEN_1_AND_400: 'Image URL must be between 1 and 400',
+  INVALID_FOLLOWED_USER_ID: 'Invalid followed user ID',
 
   LOGIN_SUCCESS: 'Login success',
   LOGOUT_SUCCESS: 'Logout success',

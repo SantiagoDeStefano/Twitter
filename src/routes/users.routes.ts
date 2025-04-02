@@ -189,12 +189,13 @@ usersRouter.get(
  * Path: /:username
  * Method: POST
  * Header: { Authorization: Bearer <access_token> }
- * Body: { user_id: string }
+ * Body: { followed_user_id: string }
 */
 usersRouter.get(
-  '/:username', 
+  '/follow', 
   accessTokenValidator,
   verifiedUserValidator,
+  followController,
   wrapRequestHandler(followController)
 ) 
 

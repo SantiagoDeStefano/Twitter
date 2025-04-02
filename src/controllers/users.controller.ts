@@ -19,7 +19,7 @@ import { ObjectId } from 'mongodb'
 
 import HTTP_STATUS from '~/constants/httpStatus'
 import DatabaseService from '~/services/database.services'
-import User from '~/models/schemas/user.schema'
+import User from '~/models/schemas/User.schema'
 import userService from '~/services/users.services'
 
 export const loginController = async (
@@ -196,4 +196,10 @@ export const followController = async (
   next: NextFunction
 ): Promise<void> => {
   const { user_id } = req.decoded_authorization as TokenPayload
+  const { followed_user_id } = req.body
+  const result = await userService.follow(user_id, followed_user_id)
+  res.json({
+    result
+  })
+  return
 }
