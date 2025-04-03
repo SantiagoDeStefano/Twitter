@@ -11,7 +11,6 @@ import User from '~/models/schemas/User.schema'
 import DatabaseService from './database.services'
 import ErrorWithStatus from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
-import { result } from 'lodash'
 
 config()
 
@@ -72,8 +71,12 @@ class UserService {
 
   async login({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, verify: verify })
+    console.log(new ObjectId(user_id))
     await DatabaseService.refreshToken.insertOne(
-      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
+       new RefreshToken({ 
+        user_id: new ObjectId(user_id),
+        token: refresh_token 
+      })
     )
     return {
       access_token,
@@ -291,6 +294,28 @@ class UserService {
     })
     return {
       message: USERS_MESSAGES.FOLLOW_SUCCESS
+    }
+  }
+
+  async unfollow(user_id: string, followed_user_id: string) {
+    const follower = await DatabaseService.followers.findOne({
+      user_id: new ObjectId(user_id),
+      followed_user_id: new ObjectId(followed_user_id)
+    })
+
+    //Can't find follower = this user_id didn't follow followed_user_id in the first place
+    if(follower == null) {
+      return {
+        message: USERS_MESSAGES.ALREADY_UNFOLLOWED
+      }
+    }
+    
+    await DatabaseService.followers.deleteOne({
+      user_id: new ObjectId(user_id),
+      followed_user_id: new ObjectId(followed_user_id)
+    })
+    return {
+      message: USERS_MESSAGES.UNFOLLOW_SUCCESS
     }
   }
 }

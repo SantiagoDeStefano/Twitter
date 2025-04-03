@@ -1,4 +1,4 @@
-import { checkSchema, ParamSchema } from 'express-validator'
+import { body, checkSchema, ParamSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { hashPassword } from '~/utils/crypto'
@@ -139,6 +139,28 @@ const dateOfBirthSchema: ParamSchema = {
   },
   isISO8601: {
     errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_REQUIRED
+  }
+}
+
+const userIdSchema: ParamSchema = {
+  custom: {
+    options: async (value: string, { req }) => {
+      if(!ObjectId.isValid(value)) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.INVALID_USER_ID,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      const followed_user = await DatabaseService.user.findOne({
+        _id: new ObjectId(value)
+      })
+      if(followed_user == null) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.USER_NOT_FOUND,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+    }
   }
 }
 
@@ -465,26 +487,12 @@ export const updateMeValidator = validate(
 
 export const followValidator = validate(
   checkSchema({
-    followed_user_id: {
-      custom: {
-        options: async (value: string, { req }) => {
-          if(!ObjectId.isValid(value)) {
-            throw new ErrorWithStatus({
-              message: USERS_MESSAGES.INVALID_FOLLOWED_USER_ID,
-              status: HTTP_STATUS.NOT_FOUND
-            })
-          }
-          const followed_user = await DatabaseService.user.findOne({
-            _id: new ObjectId(value)
-          })
-          if(followed_user == null) {
-            throw new ErrorWithStatus({
-              message: USERS_MESSAGES.USER_NOT_FOUND,
-              status: HTTP_STATUS.NOT_FOUND
-            })
-          }
-        }
-      }
-    }
-  })
+    followed_user_id: userIdSchema
+  }, ['body'])
+)
+
+export const unfollowValidator = validate(
+  checkSchema({
+    user_id: userIdSchema
+  }, ['params'])
 )

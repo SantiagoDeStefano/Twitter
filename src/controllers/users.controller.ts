@@ -11,7 +11,8 @@ import {
   VerifyForgotPasswordRequestBody,
   UpdateMeRequestBody,
   GetProfileRequestParams,
-  FollowRequestBody
+  FollowRequestBody,
+  UnfollowRequestParams
 } from '~/models/requests/users.requests'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { UserVerifyStatus } from '~/constants/enums'
@@ -27,7 +28,7 @@ export const loginController = async (
   res: Response
 ): Promise<void> => {
   const user = req.user as User
-  const user_id = user._id as Object
+  const user_id = user._id as ObjectId
   const result = await userService.login({ user_id: user_id.toString(), verify: user.verify })
   res.json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
@@ -198,6 +199,23 @@ export const followController = async (
   const { user_id } = req.decoded_authorization as TokenPayload
   const { followed_user_id } = req.body
   const result = await userService.follow(user_id, followed_user_id)
+  res.json({
+    result
+  })
+  return
+}
+
+export const unfollowController = async (
+  //Have the error on this line wrapRequestHandler(unfollowController)
+  //Because UnfollowRequestParams have the 'user_id' while ParamsDictionary doesn't
+  //Fix: extends UnfollowRequestParams with ParamsDictionary (users.requests.ts)
+  req: Request<UnfollowRequestParams>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { user_id: followed_user_id } = req.params
+  const result = await userService.unfollow(user_id, followed_user_id)
   res.json({
     result
   })

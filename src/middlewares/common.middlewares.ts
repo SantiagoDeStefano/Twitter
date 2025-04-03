@@ -2,7 +2,8 @@ import {
   Request, 
   Response, 
   NextFunction 
-} from 'express';
+} 
+from 'express';
 
 import { pick } from 'lodash';
 
