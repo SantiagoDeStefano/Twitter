@@ -9,14 +9,7 @@ config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.mhe4u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true
-  }
-})
-
+const client = new MongoClient(uri);
 class databaseService {
   private client: MongoClient
   private db: Db
@@ -44,7 +37,7 @@ class databaseService {
   }
 
   get refreshToken(): Collection<RefreshToken> {
-    return this.db.collection(process.env.DB_REFRESH_TOKEN as string)
+    return this.db.collection(process.env.DB_REFRESH_TOKENS_COLLECTION as string)
   }
 
   get followers(): Collection<Follower> {

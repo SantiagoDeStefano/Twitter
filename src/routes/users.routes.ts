@@ -4,6 +4,7 @@ import { Router } from 'express'
 import { 
   accessTokenValidator, 
   emailVerifyTokenValidator, 
+  followValidator, 
   forgotPasswordValidator, 
   loginValidator, 
   refreshTokenValidator, 
@@ -34,7 +35,7 @@ import {
 
 import { wrapRequestHandler } from '~/utils/handlers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
-import { UnfollowRequestParams, UpdateMeRequestBody } from '~/models/requests/users.requests'
+import { UpdateMeRequestBody } from '~/models/requests/users.requests'
 
 const usersRouter = Router()
 
@@ -193,11 +194,11 @@ usersRouter.get(
  * Header: { Authorization: Bearer <access_token> }
  * Body: { followed_user_id: string }
 */
-usersRouter.get(
+usersRouter.post(
   '/follow', 
   accessTokenValidator,
-  verifiedUserValidator,
-  followController,
+  // verifiedUserValidator,
+  followValidator,
   wrapRequestHandler(followController)
 ) 
 
