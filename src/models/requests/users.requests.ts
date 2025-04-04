@@ -58,6 +58,11 @@ export interface VerifyForgotPasswordRequestBody {
   forgot_password_token: string
 }
 
+export interface ChangePasswordRequest extends ParamsDictionary {
+  new_password: string,
+  confirm_new_password: string
+}
+
 //Params
 export interface GetProfileRequestParams extends ParamsDictionary {
   username: string

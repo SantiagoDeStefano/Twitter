@@ -1,4 +1,4 @@
-import { body, checkSchema, ParamSchema } from 'express-validator'
+import { body, checkSchema, ParamSchema, Schema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { hashPassword } from '~/utils/crypto'
@@ -6,13 +6,15 @@ import { verifyToken } from '~/utils/jwt'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { capitalize } from 'lodash'
 import { Request, Response, NextFunction } from 'express'
+import { ObjectId } from 'mongodb'
+import { TokenPayload } from '~/models/requests/users.requests'
+import { UserVerifyStatus } from '~/constants/enums'
+import { REGEX_USERNAME } from '~/constants/regex'
+
 import ErrorWithStatus from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import userService from '~/services/users.services'
 import DatabaseService from '~/services/database.services'
-import { ObjectId } from 'mongodb'
-import { TokenPayload } from '~/models/requests/users.requests'
-import { UserVerifyStatus } from '~/constants/enums'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -37,7 +39,7 @@ const passwordSchema: ParamSchema = {
   }
 }
 
-const confirmPasswordSchema: ParamSchema = {
+const confirmPasswordSchema = (customField: string): ParamSchema => ({
   notEmpty: {
     errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
   },
@@ -50,13 +52,13 @@ const confirmPasswordSchema: ParamSchema = {
   },
   custom: {
     options: (value, { req }) => {
-      if (value !== req.body.password) {
+      if (value !== req.body[customField]) {
         throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD)
       }
       return true
     }
   }
-}
+})
 
 const forgotPasswordTokenSchema: ParamSchema = {
   custom: {
@@ -231,7 +233,7 @@ export const registerValidator = validate(
         }
       },
       password: passwordSchema,
-      confirm_password: confirmPasswordSchema,
+      confirm_password: confirmPasswordSchema("password"),
       date_of_birth: dateOfBirthSchema
     },
     ['body']
@@ -387,7 +389,7 @@ export const resetPasswordValidator = validate(
   checkSchema(
     {
       password: passwordSchema,
-      confirm_password: confirmPasswordSchema,
+      confirm_password: confirmPasswordSchema("password"),
       forgot_password_token: forgotPasswordTokenSchema
     },
     ['body']
@@ -465,17 +467,23 @@ export const updateMeValidator = validate(
         }
       },
       username: {
-        trim: true,
         optional: true,
         isString: {
           errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_A_STRING
         },
-        isLength: {
-          options: {
-            min: 1,
-            max: 50,
-          },
-          errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_BETWEEN_1_AND_50
+        trim: true,
+        custom: {
+          options: async(value: string, { req }) => {
+            if(!REGEX_USERNAME.test(value)) {
+              throw new Error(USERS_MESSAGES.INVALID_USERNAME)
+            }
+            const user_username = await DatabaseService.user.findOne({
+              username: value
+            })
+            if(user_username != null) {
+              throw new Error(USERS_MESSAGES.USERNAME_ALREADY_EXISTS)
+            }
+          }
         }
       },
       avatar: imageSchema,
@@ -495,4 +503,33 @@ export const unfollowValidator = validate(
   checkSchema({
     user_id: userIdSchema
   }, ['params'])
+)
+
+export const changePasswordValidator = validate(
+  checkSchema({
+    old_password: {
+      ...passwordSchema,
+      custom: {
+        options: async( values: string, { req }) => {
+          const { user_id } = (req as Request).decoded_authorization as TokenPayload
+          const user = await DatabaseService.user.findOne({ _id: new ObjectId(user_id) })
+          if(!user) {
+            throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
+          }
+          const { password } = user
+          const isMatch = hashPassword(values) == password
+          if(!isMatch) {
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.OLD_PASSWORD_DOES_NOT_MATCH,
+              status: HTTP_STATUS.UNAUTHORIZED
+            })
+          }
+        }
+      }
+    },
+
+    //Change this because we are checking "new_password" not "confirm_new_password"
+    new_password: passwordSchema,
+    confirm_new_password: confirmPasswordSchema("new_password")
+  })
 )

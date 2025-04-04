@@ -11,6 +11,7 @@ export const USERS_MESSAGES = {
   CONFIRM_PASSWORD_IS_REQUIRED: 'Password confirmation is required',
   CONFIRM_PASSWORD_MUST_BE_A_STRING: 'Password confirmation must be a string',
   CONFIRM_PASSWORD_MUST_BE_FROM_8_TO_16: 'Password confirmation must be between 8 and 16',
+  CHANGE_PASSWORD_SUCCESS:'Change password successfully',
 
   DATE_OF_BIRTH_IS_REQUIRED: 'Date of birth is required',
 
@@ -34,6 +35,7 @@ export const USERS_MESSAGES = {
   IMAGE_URL_MUST_BE_A_STRING: 'Image URL must be a string',
   IMAGE_URL_MUST_BE_BETWEEN_1_AND_400: 'Image URL must be between 1 and 400',
   INVALID_USER_ID: 'Invalid user ID',
+  INVALID_USERNAME: 'Username must be between 4-15 characters and contain only letters, numbers, underscore',
 
   LOGIN_SUCCESS: 'Login success',
   LOGOUT_SUCCESS: 'Logout success',
@@ -43,6 +45,8 @@ export const USERS_MESSAGES = {
   NAME_IS_REQUIRED: 'Name is required',
   NAME_LENGTH_MUST_BE_FROM_3_TO_100: 'Name length must be from 3 to 100',
   NAME_MUST_BE_A_STRING: 'Name must be a string',
+
+  OLD_PASSWORD_DOES_NOT_MATCH: 'Old password does not match',
 
   PASSWORD_IS_REQUIRED: 'Password is required',
   PASSWORD_MUST_BE_A_STRING: 'Password must be a string',
@@ -61,6 +65,7 @@ export const USERS_MESSAGES = {
   USERNAME_MUST_BE_BETWEEN_1_AND_50: 'Username must be between 1 and 50',
   UPDATE_ME_SUCCESS: 'Update me success',
   UNFOLLOW_SUCCESS: 'Unfollowed success',
+  USERNAME_ALREADY_EXISTS: 'Username already exists',
 
   VALIDATION_ERROR: 'Validation error',
   VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success',

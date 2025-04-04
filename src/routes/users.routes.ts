@@ -3,6 +3,7 @@ import { Router } from 'express'
 //Middlewares import
 import { 
   accessTokenValidator, 
+  changePasswordValidator, 
   emailVerifyTokenValidator, 
   followValidator, 
   forgotPasswordValidator, 
@@ -30,7 +31,8 @@ import {
   updateMeController,
   getProfileController,
   followController,
-  unfollowController
+  unfollowController,
+  changePasswordController
 } from '../controllers/users.controller'
 
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -214,6 +216,23 @@ usersRouter.delete(
   verifiedUserValidator,
   unfollowValidator,
   wrapRequestHandler(unfollowController)
+) 
+
+/*
+ * Description: Change password
+ * Path: /change-password
+ * Method: PUT
+ * Header: { Authorization: Bearer <access_token> }
+ * Body: { old_password: string, password: string, confirm_password: string }
+*/
+usersRouter.put(
+  '/change-password', 
+  accessTokenValidator,
+  //Verify is optional, I would comment verifiedUserValidator for easier testing
+  // verifiedUserValidator,
+  changePasswordValidator,
+  //Have to `extends ParamsDictionary` to `ChangePasswordRequest`
+  wrapRequestHandler(changePasswordController)
 ) 
 
 export default usersRouter

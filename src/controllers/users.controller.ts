@@ -12,7 +12,8 @@ import {
   UpdateMeRequestBody,
   GetProfileRequestParams,
   FollowRequestBody,
-  UnfollowRequestParams
+  UnfollowRequestParams,
+  ChangePasswordRequest
 } from '~/models/requests/users.requests'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { UserVerifyStatus } from '~/constants/enums'
@@ -216,6 +217,19 @@ export const unfollowController = async (
   const { user_id } = req.decoded_authorization as TokenPayload
   const { user_id: followed_user_id } = req.params
   const result = await userService.unfollow(user_id, followed_user_id)
+  res.json({
+    result
+  })
+}
+
+export const changePasswordController = async (
+  req: Request<ChangePasswordRequest>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { new_password } = req.body
+  const result = await userService.changePassword(user_id, new_password)
   res.json({
     result
   })

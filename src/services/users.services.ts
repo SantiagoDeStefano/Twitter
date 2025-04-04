@@ -1,4 +1,4 @@
-import { RegisterRequestBody, UpdateMeRequestBody } from '~/models/requests/users.requests'
+import { ChangePasswordRequest, RegisterRequestBody, UpdateMeRequestBody } from '~/models/requests/users.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
 import { TokenType, UserVerifyStatus } from '~/constants/enums'
@@ -318,6 +318,20 @@ class UserService {
     })
     return {
       message: USERS_MESSAGES.UNFOLLOW_SUCCESS
+    }
+  }
+
+  async changePassword(user_id: string, new_password: string) {
+    await DatabaseService.user.updateOne(
+      {_id: new ObjectId(user_id)},
+      {
+        $set: {
+          password: hashPassword(new_password)
+        }
+      }        
+    )
+    return {
+      message: USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS
     }
   }
 }
