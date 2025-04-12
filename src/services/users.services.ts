@@ -134,7 +134,6 @@ class UserService {
     //MongoDB update the value
     const [tokens] = await Promise.all([
       this.signAccessAndRefreshToken({ user_id, verify: UserVerifyStatus.Verified }),
-
       DatabaseService.user.updateOne({ _id: new ObjectId(user_id) }, [
         {
           $set: {
@@ -147,6 +146,10 @@ class UserService {
     ])
 
     const [access_token, refresh_token] = tokens
+    await DatabaseService.refreshToken.insertOne({ 
+      user_id: new ObjectId(user_id), 
+      token: refresh_token
+    })
 
     return {
       access_token,
