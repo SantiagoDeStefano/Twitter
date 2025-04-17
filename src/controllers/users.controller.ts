@@ -23,6 +23,9 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import DatabaseService from '~/services/database.services'
 import User from '~/models/schemas/User.schema'
 import userService from '~/services/users.services'
+import { config } from 'dotenv'
+
+config()
 
 export const loginController = async (
   req: Request<ParamsDictionary, any, LoginRequestBody>,
@@ -36,6 +39,13 @@ export const loginController = async (
     result
   })
   return
+}
+
+export const oauthController = async (req: Request, res: Response): Promise<void> => {
+  const { code } = req.query
+  const result = await userService.oauth(code as string)
+  const urlRedirect = `${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify=${result.verify}`
+  return res.redirect(urlRedirect)
 }
 
 export const registerController = async (

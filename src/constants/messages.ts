@@ -24,13 +24,14 @@ export const USERS_MESSAGES = {
   EMAIL_VERIFY_SUCCESS: 'Email verified successfully',
   EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required',
   EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
-
+  
   FORGOT_PASSWORD_TOKEN_REQUIRED: 'Forgot password token is required',
   FOLLOW_SUCCESS: 'Follow success',
-
+  
   GET_ME_SUCCESS: 'Get my profile success',
   GET_PROFILE_SUCCESS: 'Get profile success',
-
+  GMAIL_NOT_VERIFIED: 'Email is not verified',
+  
   INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
   IMAGE_URL_MUST_BE_A_STRING: 'Image URL must be a string',
   IMAGE_URL_MUST_BE_BETWEEN_1_AND_400: 'Image URL must be between 1 and 400',

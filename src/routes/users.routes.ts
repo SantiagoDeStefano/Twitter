@@ -32,12 +32,14 @@ import {
   getProfileController,
   followController,
   unfollowController,
-  changePasswordController
+  changePasswordController,
+  oauthController
 } from '../controllers/users.controller'
 
 import { wrapRequestHandler } from '~/utils/handlers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import { UpdateMeRequestBody } from '~/models/requests/users.requests'
+import { wrap } from 'lodash'
 
 const usersRouter = Router()
 
@@ -50,7 +52,18 @@ const usersRouter = Router()
 usersRouter.post(
   '/login', 
   loginValidator, 
-  loginController
+  wrapRequestHandler(loginController)
+)
+
+/**
+ * Description: OAuth with Google
+ * Path: /api/oauth/google
+ * Method: GET
+ * Query: { code: string }
+ */
+usersRouter.get(
+  '/oauth/google',
+  wrapRequestHandler(oauthController)
 )
 
 /**
@@ -234,5 +247,7 @@ usersRouter.put(
   //Have to `extends ParamsDictionary` to `ChangePasswordRequest`
   wrapRequestHandler(changePasswordController)
 ) 
+
+
 
 export default usersRouter
