@@ -1,4 +1,5 @@
 import { defaultErrorHandler } from './middlewares/error.middlewares'
+import { initFolder } from './utils/file'
 
 import express from 'express'
 import usersRouter from './routes/users.routes'
@@ -9,6 +10,9 @@ DatabaseService.connect()
 
 const app = express()
 const port = 4000
+
+// Create upload folder
+initFolder()
 
 app.use(express.json())
 app.use('/users', usersRouter)
