@@ -1,14 +1,14 @@
 import { IncomingMessage } from 'http'
 import { Request } from 'express'
-import fs from 'fs'
-import formidable from 'formidable'
+import { UPLOAD_TEMP_DIR } from '~/constants/dir'
+import formidable, { File } from 'formidable'
+
 // Handling path
-import path from 'path'
+import fs from 'fs'
 
 export const initFolder = () => {
-  const uploadFolderPath = path.resolve('uploads/images')
-  if (!fs.existsSync(uploadFolderPath)) {
-    fs.mkdirSync(uploadFolderPath, {
+  if (!fs.existsSync(UPLOAD_TEMP_DIR)) {
+    fs.mkdirSync(UPLOAD_TEMP_DIR, {
       recursive: true // Create nested folder
     })
   }
@@ -16,10 +16,10 @@ export const initFolder = () => {
 
 export const handleUploadSingleImage = (req: Request) => {
   const form = formidable({
-    uploadDir: path.resolve('uploads'),
+    uploadDir: UPLOAD_TEMP_DIR,
     maxFiles: 1,
     keepExtensions: true,
-    maxFileSize: 300 * 1024,
+    maxFileSize: 300 * 1024, //300KB
     filter: function ({ name, originalFilename, mimetype }) {
       const valid = name === 'image' && Boolean(mimetype?.includes('image/'))
       if(!valid) {
@@ -29,17 +29,21 @@ export const handleUploadSingleImage = (req: Request) => {
     }
   })
 
-  return new Promise((resolve, reject) => {
+  return new Promise<File>((resolve, reject) => {
     form.parse(req as IncomingMessage, (err, fields, files) => {
-      // console.log('fields', fields)
-      // console.log('files', files)
       if (err) {
         return reject(err)
       }
-      if(!Boolean(files.image)) {
+      if (!files.image || files.image.length === 0) {
         return reject(new Error('File can not be empty'))
       }
-      resolve(files)
+      resolve(files.image[0])
     })
   })
+}
+
+export const getNameFromFullname = (fullname: string) => {
+  const name = fullname.split('.')
+  name.pop()
+  return name.join('')
 }
