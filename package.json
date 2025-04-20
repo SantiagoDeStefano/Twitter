@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon",
+    "dev": "npx nodemon --development",
     "build": "npx rimraf ./dist && tsc && npx tsc-alias",
-    "start": "node dist/index.js",
+    "start": "node dist/index.js --production",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
@@ -29,6 +29,7 @@
     "typescript-eslint": "^8.25.0"
   },
   "dependencies": {
+    "@types/minimist": "^1.2.5",
     "axios": "^1.8.4",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -36,6 +37,7 @@
     "formidable": "^3.5.2",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "minimist": "^1.2.8",
     "mongodb": "^6.14.0",
     "sharp": "^0.34.1"
   }

@@ -150,7 +150,8 @@ class UserService {
     const [access_token, refresh_token] = tokens
     await DatabaseService.refreshToken.insertOne({
       user_id: new ObjectId(user_id),
-      token: refresh_token
+      token: refresh_token,
+      created_at: new Date()
     })
 
     return {

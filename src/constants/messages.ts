@@ -76,3 +76,8 @@ export const USERS_MESSAGES = {
 
   STRONG_PASSWORD: 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character',
 } as const
+
+export const MEDIAS_MESSAGES = {
+  IMAGE_UPLOAD_SUCCESS: 'Image uploaded successfully',
+  VIDEO_UPLOAD_SUCCESS: 'Video uploaded successfully'
+} as const

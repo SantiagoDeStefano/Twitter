@@ -397,7 +397,7 @@ export const resetPasswordValidator = validate(
 )
 
 export const verifiedUserValidator = async (req: Request, res: Response, next: NextFunction) => {
-const { verify } = req.decoded_authorization as TokenPayload
+  const { verify } = req.decoded_authorization as TokenPayload
   // const { user_id } = req.decoded_authorization as TokenPayload
   // console.log(user_id)
   // console.log(verify)

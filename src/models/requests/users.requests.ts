@@ -1,7 +1,6 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { TokenType } from '~/constants/enums'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { IncomingMessage } from 'http'; // Add this import
 
 //Requests
 export interface FollowRequestBody {

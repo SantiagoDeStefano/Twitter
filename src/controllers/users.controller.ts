@@ -93,6 +93,7 @@ export const verifyEmailController = async (
     res.status(HTTP_STATUS.OK).json({
       message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED
     })
+    return
   }
   //If not verify then we assign user to req.user to use in controller
   const result = await userService.verifyEmail(user_id)
