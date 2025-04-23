@@ -36,7 +36,7 @@ export const serveImageController = (req: Request, res: Response, next: NextFunc
 
 export const serveVideoStreamController = (req: Request, res: Response, next: NextFunction) => {
   const range = req.headers.range
-  if(!range) {
+  if (!range) {
     res.status(HTTP_STATUS.BAD_REQUEST).send('Requires Range header')
   }
   const { name } = req.params
@@ -51,12 +51,30 @@ export const serveVideoStreamController = (req: Request, res: Response, next: Ne
   // Lay gia tri byte bat dau tu header range(vd: bytes = 1048567-)
   const start = Number(range?.replace(/\D/g, ''))
   // Lay gia tri byte ket thuc, vuot qua dung luong videoSize = videoSize
-  const end = Math.min(start + chunkSize, videoSize) 
+  const end = Math.min(start + chunkSize, videoSize - 1)
 
   // Dung luong thuc te cho moi doan video stream,
   // Thuong day se la chunkSize, ngoai tru doan cuoi cung
-  const contentLength = end - start
+  const contentLength = end - start + 1
   const contentType = mime.getType(videoPath) || 'video/*'
+
+  /**
+   * Format của header Content-Range: bytes <start> - <end> / <videoSize>
+   * Ví dụ: Content-Range: bytes 1048574-3145727/3145728
+   * Yêu cầu là `end` phải luôn luôn nhỏ `videoSize`
+   * ❌ `Content-Range`: `bytes 0-100/100`
+   * ✅ `Content-Range`: `bytes 0-99/100`
+   *
+   * Còn Content-Length = end - start + 1. Đại diện cho khoảng cách.
+   * Công thức là end - start + 1
+   *
+   * ChunkSize = 50
+   * videoSize = 100
+   * |0 -------------- 50|51 -------------- 99|100 (end)
+   * stream 1: start = 0, end = 50, contentLength = 51
+   * stream 2: start = 51, end = 99, contentLength = 49
+   */
+
   const headers = {
     'Content-Range': `bytes ${start}-${end}/${videoSize}`,
     'Accept-Ranges': 'bytes',
@@ -67,4 +85,3 @@ export const serveVideoStreamController = (req: Request, res: Response, next: Ne
   const videoStream = fs.createReadStream(videoPath, { start, end })
   videoStream.pipe(res)
 }
-
