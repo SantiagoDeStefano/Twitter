@@ -13,7 +13,8 @@ import {
   GetProfileRequestParams,
   FollowRequestBody,
   UnfollowRequestParams,
-  ChangePasswordRequest
+  ChangePasswordRequest,
+  RefreshTokenRequestBody
 } from '~/models/requests/users.requests'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { UserVerifyStatus } from '~/constants/enums'
@@ -67,6 +68,21 @@ export const logoutController = async (
   const { refresh_token } = req.body
   const result = await userService.logout(refresh_token)
   res.json({ result })
+  return
+}
+
+export const refreshTokenController = async (
+  req: Request<ParamsDictionary, any, RefreshTokenRequestBody>,
+  res: Response
+): Promise<void> => {
+  console.log(req.decoded_refresh_token)
+  const { refresh_token } = req.body
+  const { user_id, verify } = req.decoded_refresh_token as TokenPayload
+  const result = await userService.refreshToken({ user_id, refresh_token, verify })
+  res.json({
+    message: USERS_MESSAGES.REFRESH_TOKEN_SUCCESS,
+    result
+  })
   return
 }
 

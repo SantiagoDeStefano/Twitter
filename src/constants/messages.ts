@@ -58,6 +58,7 @@ export const USERS_MESSAGES = {
   REGISTER_SUCCESS: 'Register success',
   RESEND_VERIFY_EMAIL_SUCCESS: 'Resend verify email success',
   RESET_PASSWORD_SUCCESS: 'Reset password success',
+  REFRESH_TOKEN_SUCCESS: 'New tokens returned successfully',
 
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or does not exist',
   USER_NOT_FOUND: 'User not found',

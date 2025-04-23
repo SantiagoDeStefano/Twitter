@@ -126,6 +126,32 @@ class UserService {
     }
   }
 
+  async refreshToken({
+    user_id,
+    refresh_token,
+    verify
+  }: {
+    user_id: string
+    refresh_token: string
+    verify: UserVerifyStatus
+  }) {
+    const [new_access_token, new_refresh_token] = await Promise.all([
+      this.signAccessToken({ user_id, verify }),
+      this.signRefreshToken({ user_id, verify }),
+      DatabaseService.refreshToken.deleteOne({ token: refresh_token })
+    ])
+    await DatabaseService.refreshToken.insertOne(
+      new RefreshToken({
+        user_id: new ObjectId(user_id),
+        token: new_refresh_token
+      })
+    )
+    return {
+      access_token: new_access_token,
+      refresh_token: new_refresh_token
+    }
+  }
+
   async checkEmailExist(email: string) {
     const user = await DatabaseService.user.findOne({ email })
     return Boolean(user)
@@ -355,15 +381,13 @@ class UserService {
       }
     })
     return data as {
-      access_token: string,
+      access_token: string
       id_token: string
     }
   }
 
   private async getGoogleUserInfo(access_token: string, id_token: string) {
-    const { data } = await axios.get(
-      'https://www.googleapis.com/oauth2/v1/userinfo',
-    { 
+    const { data } = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo', {
       params: {
         access_token,
         alt: 'json'
@@ -373,20 +397,20 @@ class UserService {
       }
     })
     return data as {
-      id: string,
-      email: string,
-      verified_email: boolean,
-      name: string,
-      given_name: string,
-      family_name: string,
+      id: string
+      email: string
+      verified_email: boolean
+      name: string
+      given_name: string
+      family_name: string
       picture: string
     }
   }
 
   async oauth(code: string) {
-    const { access_token, id_token }= await this.getOauthGoogleToken(code)
+    const { access_token, id_token } = await this.getOauthGoogleToken(code)
     const userInfo = await this.getGoogleUserInfo(access_token, id_token)
-    if(!userInfo.verified_email) {
+    if (!userInfo.verified_email) {
       throw new ErrorWithStatus({
         message: USERS_MESSAGES.GMAIL_NOT_VERIFIED,
         status: HTTP_STATUS.BAD_REQUEST
@@ -396,8 +420,11 @@ class UserService {
     //Check if email exitst or not
     const user = await DatabaseService.user.findOne({ email: userInfo.email })
     //If exists, login
-    if(user) {
-      const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id: user._id.toString(), verify: user.verify })
+    if (user) {
+      const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
+        user_id: user._id.toString(),
+        verify: user.verify
+      })
       await DatabaseService.refreshToken.insertOne(
         new RefreshToken({
           //Because user._id itself is ObjectId
@@ -414,7 +441,7 @@ class UserService {
     }
     //If not exists, register
     else {
-      const random_password = generateStrongPassword();
+      const random_password = generateStrongPassword()
       const data = await this.register({
         email: userInfo.email,
         name: userInfo.name,

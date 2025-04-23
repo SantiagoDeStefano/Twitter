@@ -33,7 +33,8 @@ import {
   followController,
   unfollowController,
   changePasswordController,
-  oauthController
+  oauthController,
+  refreshTokenController
 } from '../controllers/users.controller'
 
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -91,6 +92,18 @@ usersRouter.post(
   refreshTokenValidator, 
   wrapRequestHandler(logoutController)
 ) 
+
+/**
+ * Description: Get refresh token
+ * Path: /refresh-token
+ * Method: POST
+ * Body: { refresh_token: string }
+ */
+usersRouter.post(
+  '/refresh-token', 
+  refreshTokenValidator, 
+  wrapRequestHandler(refreshTokenController)
+)
 
 /**
  * Description: Verify email when user click on the link in the email
