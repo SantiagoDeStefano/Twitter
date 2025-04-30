@@ -1,4 +1,8 @@
 import { Link } from 'react-router-dom'
+import { MediaPlayer, MediaProvider } from '@vidstack/react'
+
+// Base styles for media player and provider (~400B).
+import '@vidstack/react/player/styles/base.css'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -41,9 +45,14 @@ export default function Home() {
           <img src={reactLogo} className='logo react' alt='React logo' />
         </a>
       </div>
+      {/* <h2>Video Streaming</h2>
       <video controls width={500}>
-        <source src="http://localhost:4000/static/video/3390ba734d8d1619b887f9100.mp4" type='video/mp4' />
-      </video>
+        <source src='http://localhost:4000/static/video/3390ba734d8d1619b887f9100.mp4' type='video/mp4' />
+      </video> */}
+      <h2>HLS Streaming</h2>
+      <MediaPlayer title='Sprite Fight' src='http://localhost:4000/static/video-hls/vgp8xXeXZ_Juo_36uh7rf/master.m3u8'>
+        <MediaProvider />
+      </MediaPlayer>
       <h1>Google OAuth 2.0</h1>
       <p className='read-the-docs'>
         {isAuthenticated ? (

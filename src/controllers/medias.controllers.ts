@@ -86,6 +86,28 @@ export const serveVideoStreamController = (req: Request, res: Response, next: Ne
   videoStream.pipe(res)
 }
 
+export const serveM3U8Controller = (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params
+  res.sendFile(path.resolve(UPLOAD_VIDEO_DIR, id, 'master.m3u8'), (err) => {
+    if (err) {
+      res.status((err as any).status).send('Not found')
+    }
+  })
+}
+
+export const serveSegmentController = (req: Request, res: Response, next: NextFunction) => {
+  const { id, v, segment } = req.params
+  // Segment: 0.ts, 1.ts, 2.ts, ...
+  console.log("id: ", id)
+  console.log("v: ", v)
+  console.log("segment: ", segment)
+  res.sendFile(path.resolve(UPLOAD_VIDEO_DIR, id, v, segment), (err) => {
+    if (err) {
+      res.status((err as any).status).send('Not found')
+    }
+  })
+}
+
 export const uploadVideoHLSController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const url = await mediasService.uploadVideoHLS(req)
   res.json({

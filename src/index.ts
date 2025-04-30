@@ -7,10 +7,12 @@ import usersRouter from './routes/users.routes'
 import DatabaseService from './services/database.services'
 import mediasRouter from './routes/medias.routes'
 import staticRouter from './routes/static.routes'
+import cors from 'cors'
 
 DatabaseService.connect()
 
 const app = express()
+app.use(cors())
 const port = process.env.PORT
 
 // Create upload folder
