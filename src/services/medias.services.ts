@@ -10,6 +10,47 @@ import sharp from 'sharp'
 import path from 'path'
 import fs from 'fs'
 import fsPromise from 'fs'
+import { config } from 'dotenv'
+
+config()
+
+class Queue {
+  items: string[]
+  encoding: boolean
+  constructor() {
+    this.items = []
+    this.encoding = false
+  }
+  enqueue(item: string) {
+    this.items.push(item)
+    this.processEncode()
+  }
+  async processEncode() {
+    if(this.encoding) {
+      return 
+    }
+    if(this.items.length <= 0) {
+      console.log('Queue is empty')
+      return
+    }
+    this.encoding = true
+    const videoPath = this.items[0]
+    try {
+      await encodeHLSWithMultipleVideoStreams(videoPath)
+      this.items.shift()  
+      fsPromise.unlinkSync(videoPath)
+      console.log(`Encode video ${videoPath} success`)
+    } 
+    catch (error) {
+      console.log(`Encode video ${videoPath} error`)
+      console.log(error)
+    }
+    this.encoding = false
+    this.processEncode()
+  }
+}
+
+const queue = new Queue()
 
 class MediasService {
   async uploadImage(req: Request) {
@@ -53,9 +94,10 @@ class MediasService {
     const files = await handleUploadVideo(req)
     const result: Media[] = await Promise.all(
       files.map(async (file) => {
-        await encodeHLSWithMultipleVideoStreams(file.filepath)
         const newName = getNameFromFullname(file.newFilename)
-        fsPromise.unlinkSync(file.filepath)
+        // await encodeHLSWithMultipleVideoStreams(file.filepath)
+        queue.enqueue(file.filepath)
+        // fsPromise.unlinkSync(file.filepath)
         return {
           url: isProduction
             ? `${process.env.HOST}/static/video-hls/${newName}/master.m3u8`
