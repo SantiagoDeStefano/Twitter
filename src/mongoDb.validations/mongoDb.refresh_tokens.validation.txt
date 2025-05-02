@@ -6,7 +6,7 @@
       '_id',
       'token',
       'user_id',
-      'create_at'
+      'created_at'
     ],
     properties: {
       _id: {
@@ -24,6 +24,14 @@
       created_at: {
         bsonType: 'date',
         description: '\'created_at\' is required and must be a valid date'
+      },
+      iat: {
+        bsonType: 'date',
+        description: '\'iata\' is required and must be a valid date'
+      },
+      exp: {
+        bsonType: 'date',
+        description: '\'exp\' is required and must be a valid date'
       }
     },
     additionalProperties: false

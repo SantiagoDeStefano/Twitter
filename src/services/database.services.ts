@@ -5,12 +5,13 @@ import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import Follower from '~/models/schemas/Follower.schema'
 import User from '../models/schemas/User.schema'
 import VideoStatus from '~/models/schemas/VideoStatus.schema'
+import { uniqueId } from 'lodash'
 
 config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.mhe4u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri);
+const client = new MongoClient(uri)
 class databaseService {
   private client: MongoClient
   private db: Db
@@ -31,6 +32,12 @@ class databaseService {
       console.log('Error ', error)
       throw error
     }
+  }
+
+  indexUser() {
+    this.user.createIndex({ email: 1, password: 1 })
+    this.user.createIndex({ email: 1 }, { unique: true })
+    this.user.createIndex({ username: 1 }, { unique: true })
   }
 
   get user(): Collection<User> {

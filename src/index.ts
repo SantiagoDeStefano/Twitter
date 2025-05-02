@@ -8,8 +8,13 @@ import DatabaseService from './services/database.services'
 import mediasRouter from './routes/medias.routes'
 import staticRouter from './routes/static.routes'
 import cors from 'cors'
+import { config } from 'dotenv'
 
-DatabaseService.connect()
+config()
+
+DatabaseService.connect().then(() => {
+  DatabaseService.indexUser()
+})
 
 const app = express()
 app.use(cors())
