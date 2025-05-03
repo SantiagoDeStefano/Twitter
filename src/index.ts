@@ -1,6 +1,7 @@
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 import { initFolder } from './utils/file'
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
+import { config } from 'dotenv'
 
 import express from 'express'
 import usersRouter from './routes/users.routes'
@@ -8,12 +9,14 @@ import DatabaseService from './services/database.services'
 import mediasRouter from './routes/medias.routes'
 import staticRouter from './routes/static.routes'
 import cors from 'cors'
-import { config } from 'dotenv'
 
 config()
 
 DatabaseService.connect().then(() => {
   DatabaseService.indexUser()
+  DatabaseService.indexRefreshToken()
+  DatabaseService.indexFollowers()
+  DatabaseService.indexVideoStatus()
 })
 
 const app = express()
