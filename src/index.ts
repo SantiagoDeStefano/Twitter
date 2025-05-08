@@ -9,6 +9,7 @@ import DatabaseService from './services/database.services'
 import mediasRouter from './routes/medias.routes'
 import staticRouter from './routes/static.routes'
 import cors from 'cors'
+import tweetsRouter from './routes/tweets.routes'
 
 config()
 
@@ -31,6 +32,7 @@ console.log(UPLOAD_IMAGE_DIR)
 app.use(express.json())
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
+app.use('/tweets', tweetsRouter)
 app.use('/static', staticRouter)
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 
