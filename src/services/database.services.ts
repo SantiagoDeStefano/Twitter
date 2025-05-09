@@ -6,6 +6,7 @@ import Follower from '~/models/schemas/Follower.schema'
 import User from '../models/schemas/User.schema'
 import VideoStatus from '~/models/schemas/VideoStatus.schema'
 import { uniqueId } from 'lodash'
+import Tweet from '~/models/schemas/Tweet.schema'
 
 config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.mhe4u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
@@ -95,6 +96,10 @@ class databaseService {
 
   get videoStatus(): Collection<VideoStatus> {
     return this.db.collection(process.env.DB_VIDEO_STATUS_COLLECTION as string)
+  }
+
+  get tweets(): Collection<Tweet> {
+    return this.db.collection(process.env.DB_TWEETS_COLLECT as string)
   }
 }
 

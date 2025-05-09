@@ -7,7 +7,7 @@ export interface TweetRequestBody {
   audience: TweetAudience
   content: string
   parent_id: null | ObjectId //  chỉ null khi tweet gốc
-  hashtags: string[]
+  hashtags: ObjectId[]
   mentions: string[]
   medias: Media[]
 }
