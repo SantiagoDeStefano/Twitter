@@ -2,7 +2,7 @@ import Bookmark from '~/models/schemas/Bookmark.schema'
 import DatabaseService from './database.services'
 import { ObjectId, WithId } from 'mongodb'
 
-class BookmarkService {
+class BookmarksService {
   async bookmarkTweet(user_id: string, tweetId: string) {
     const result = await DatabaseService.bookmarks.findOneAndUpdate(
       {
@@ -25,5 +25,5 @@ class BookmarkService {
   }
 }
 
-const bookmarksService = new BookmarkService()
+const bookmarksService = new BookmarksService()
 export default bookmarksService
