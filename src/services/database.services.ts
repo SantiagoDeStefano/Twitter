@@ -8,6 +8,7 @@ import VideoStatus from '~/models/schemas/VideoStatus.schema'
 import { uniqueId } from 'lodash'
 import Tweet from '~/models/schemas/Tweet.schema'
 import Hashtag from '~/models/schemas/Hashtag.schema'
+import Bookmark from '~/models/schemas/Bookmark.schema'
 
 config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.mhe4u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
@@ -105,6 +106,10 @@ class databaseService {
 
   get hashtags(): Collection<Hashtag> {
     return this.db.collection(process.env.DB_HASHTAGS_COLLECTION as string)
+  }
+
+  get bookmarks(): Collection<Bookmark> {
+    return this.db.collection(process.env.DB_BOOKMARKS_COLLECTION as string)
   }
 }
 

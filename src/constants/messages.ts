@@ -87,6 +87,7 @@ export const MEDIAS_MESSAGES = {
 export const TWEETS_MESSAGES = {
   CONTENT_MUST_BE_A_NON_EMPTY_STRING: 'Content must be a non-empty string',
   CONTENT_MUST_BE_AN_EMPTY_STRING: 'Content must be an empty string',
+  CREATED_TWEET_BODY: 'Created tweet body',
 
   HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING: 'Hashtags must be an array of string',
 
@@ -99,3 +100,7 @@ export const TWEETS_MESSAGES = {
   PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'ParentID must be a valid tweet id',
   PARENT_ID_MUST_BE_NULL: 'ParentID must be null',
 } as const 
+
+export const BOOKMARKS_MESSAGES = {
+  BOOKMARKS_TWEET_SUCCESSFULLY: 'Bookmarked tweet successfully'
+} as const

@@ -1,17 +1,17 @@
 import { ObjectId } from "mongodb";
 
 interface FollowerType {
-  _id?: ObjectId;
-  user_id: ObjectId;
-  followed_user_id: ObjectId;
-  created_at?: Date;
+  _id?: ObjectId
+  user_id: ObjectId
+  followed_user_id: ObjectId
+  created_at?: Date
 }
 
 export default class Follower {
-  _id?: ObjectId;
-  user_id: ObjectId;
-  followed_user_id: ObjectId;
-  created_at?: Date;
+  _id?: ObjectId
+  user_id: ObjectId
+  followed_user_id: ObjectId
+  created_at?: Date
 
   constructor({ _id, user_id, followed_user_id, created_at }: FollowerType) {
     this._id = _id;
