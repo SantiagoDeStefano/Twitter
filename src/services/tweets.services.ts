@@ -1,4 +1,4 @@
-import { TweetRequestBody } from '~/models/requests/tweets.requests'
+import { CreateTweetRequestBody } from '~/models/requests/tweets.requests'
 import DatabaseService from './database.services'
 import Tweet from '~/models/schemas/Tweet.schema'
 import { ObjectId, WithId } from 'mongodb'
@@ -28,7 +28,7 @@ class TweetsService {
     return hashtagDocuments.map((hashtag) => (hashtag as WithId<Hashtag>)._id)
   }
 
-  async createTweet(user_id: string, body: TweetRequestBody) {
+  async createTweet(user_id: string, body: CreateTweetRequestBody) {
     const hashtags = await this.checkAndCreateHashtags(body.hashtags)
     const result = await DatabaseService.tweets.insertOne(
       new Tweet({
@@ -44,6 +44,13 @@ class TweetsService {
     )
     const tweet = await DatabaseService.tweets.findOne({ _id: result.insertedId })
     return tweet
+  }
+
+  async getTweet(tweet_id: string) {
+    const result = await DatabaseService.tweets.findOne({
+      _id: new ObjectId(tweet_id)
+    })
+    return result
   }
 }
 

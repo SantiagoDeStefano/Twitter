@@ -2,8 +2,8 @@ import { ObjectId } from "mongodb";
 import { TweetAudience, TweetType } from "~/constants/enums";
 import { Media } from "../Others";
 
-// Requests
-export interface TweetRequestBody {
+// Body
+export interface CreateTweetRequestBody {
   type: TweetType
   audience: TweetAudience
   content: string
@@ -11,4 +11,9 @@ export interface TweetRequestBody {
   hashtags: string[]
   mentions: string[]
   medias: Media[]
+}
+
+// Params
+export interface GetTweetRequestParams {
+  tweet_id: string
 }

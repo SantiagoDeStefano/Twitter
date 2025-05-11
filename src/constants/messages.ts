@@ -90,16 +90,22 @@ export const TWEETS_MESSAGES = {
   CONTENT_MUST_BE_AN_EMPTY_STRING: 'Content must be an empty string',
   CREATED_TWEET_BODY: 'Created tweet body',
 
+  GET_TWEET_SUCCESSFULLY: 'Get tweet successfully',
+
+
   HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING: 'Hashtags must be an array of string',
 
   INVALID_TWEET_TYPE: 'Invalid tweet type',
   INVALID_TWEET_AUDIENCE: 'Invalid tweet audience',
+  INVALID_TWEET_ID: 'Invalid tweetID',
 
   MENTIONS_MUST_BE_A_VALID_ARRAY_OF_USER_ID: 'Mentions must be a valid array of userId',
   MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'Medias must be a valid array of media objects',
 
   PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'ParentID must be a valid tweet id',
-  PARENT_ID_MUST_BE_NULL: 'ParentID must be null'
+  PARENT_ID_MUST_BE_NULL: 'ParentID must be null',
+
+  TWEET_NOT_FOUND: 'Tweet notfound'
 } as const
 
 export const BOOKMARKS_MESSAGES = {

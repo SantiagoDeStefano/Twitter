@@ -13,6 +13,7 @@
       'email_verify_token',
       'forgot_password_token',
       'verify',
+      'twitter_circle',
       'bio',
       'location',
       'website',
@@ -65,6 +66,15 @@
           2
         ],
         description: '\'verify\' is required and must be a number in [0, 1, 2]'
+      },
+      twitter_circle: {
+        bsonType: 'array',
+        uniqueItems: true,
+        additionalProperties: false,
+        items: {
+          bsonType: 'objectId'
+        },
+        description: '\'twitter_circle\' must be an array and is required'
       },
       bio: {
         bsonType: 'string',
