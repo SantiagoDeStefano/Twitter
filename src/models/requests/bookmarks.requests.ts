@@ -8,5 +8,5 @@ export interface BookmarkTweetRequestBody {
 
 // Params
 export interface UnbookmarkTweetParams extends ParamsDictionary {
-  tweet_delete_id: string
+  tweet_unbookmark_id: string
 }

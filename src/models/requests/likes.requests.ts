@@ -1,3 +1,9 @@
+// Body
 export interface LikeTweetRequestBody {
   tweet_id: string
+}
+
+// Params
+export interface UnlikeTweetParams {
+  tweet_unlike_id: string
 }
