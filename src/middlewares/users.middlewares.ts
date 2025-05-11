@@ -90,7 +90,7 @@ const forgotPasswordTokenSchema: ParamSchema = {
             status: HTTP_STATUS.UNAUTHORIZED
           })
         }
-        
+
         req.decoded_forgot_password_token = decoded_forgot_password_token
       } catch (error) {
         throw new ErrorWithStatus({
@@ -129,7 +129,7 @@ const imageSchema: ParamSchema = {
   isLength: {
     options: {
       min: 1,
-      max: 400,
+      max: 400
     },
     errorMessage: USERS_MESSAGES.IMAGE_URL_MUST_BE_BETWEEN_1_AND_400
   }
@@ -147,7 +147,7 @@ const dateOfBirthSchema: ParamSchema = {
 const userIdSchema: ParamSchema = {
   custom: {
     options: async (value: string, { req }) => {
-      if(!ObjectId.isValid(value)) {
+      if (!ObjectId.isValid(value)) {
         throw new ErrorWithStatus({
           message: USERS_MESSAGES.INVALID_USER_ID,
           status: HTTP_STATUS.NOT_FOUND
@@ -156,7 +156,7 @@ const userIdSchema: ParamSchema = {
       const followed_user = await DatabaseService.user.findOne({
         _id: new ObjectId(value)
       })
-      if(followed_user == null) {
+      if (followed_user == null) {
         throw new ErrorWithStatus({
           message: USERS_MESSAGES.USER_NOT_FOUND,
           status: HTTP_STATUS.NOT_FOUND
@@ -233,7 +233,7 @@ export const registerValidator = validate(
         }
       },
       password: passwordSchema,
-      confirm_password: confirmPasswordSchema("password"),
+      confirm_password: confirmPasswordSchema('password'),
       date_of_birth: dateOfBirthSchema
     },
     ['body']
@@ -242,8 +242,8 @@ export const registerValidator = validate(
 
 export const accessTokenValidator = validate(
   checkSchema(
-  {
-    Authorization: {
+    {
+      Authorization: {
         custom: {
           options: async (value: string, { req }) => {
             const access_token = (value || '').split(' ')[1]
@@ -389,7 +389,7 @@ export const resetPasswordValidator = validate(
   checkSchema(
     {
       password: passwordSchema,
-      confirm_password: confirmPasswordSchema("password"),
+      confirm_password: confirmPasswordSchema('password'),
       forgot_password_token: forgotPasswordTokenSchema
     },
     ['body']
@@ -433,7 +433,7 @@ export const updateMeValidator = validate(
         isLength: {
           options: {
             min: 1,
-            max: 100,
+            max: 100
           },
           errorMessage: USERS_MESSAGES.BIO_LENGTH_MUST_BE_BETWEEN_1_AND_100
         }
@@ -447,7 +447,7 @@ export const updateMeValidator = validate(
         isLength: {
           options: {
             min: 1,
-            max: 100,
+            max: 100
           },
           errorMessage: USERS_MESSAGES.LOCATION_LENGTH_MUST_BE_BETWEEN_1_AND_100
         }
@@ -461,7 +461,7 @@ export const updateMeValidator = validate(
         isLength: {
           options: {
             min: 1,
-            max: 200,
+            max: 200
           },
           errorMessage: USERS_MESSAGES.WEBSITE_LENGTH_MUST_BE_BETWEEN_1_AND_200
         }
@@ -473,14 +473,14 @@ export const updateMeValidator = validate(
         },
         trim: true,
         custom: {
-          options: async(value: string, { req }) => {
-            if(!REGEX_USERNAME.test(value)) {
+          options: async (value: string, { req }) => {
+            if (!REGEX_USERNAME.test(value)) {
               throw new Error(USERS_MESSAGES.INVALID_USERNAME)
             }
             const user_username = await DatabaseService.user.findOne({
               username: value
             })
-            if(user_username != null) {
+            if (user_username != null) {
               throw new Error(USERS_MESSAGES.USERNAME_ALREADY_EXISTS)
             }
           }
@@ -494,15 +494,21 @@ export const updateMeValidator = validate(
 )
 
 export const followValidator = validate(
-  checkSchema({
-    followed_user_id: userIdSchema
-  }, ['body'])
+  checkSchema(
+    {
+      followed_user_id: userIdSchema
+    },
+    ['body']
+  )
 )
 
 export const unfollowValidator = validate(
-  checkSchema({
-    user_id: userIdSchema
-  }, ['params'])
+  checkSchema(
+    {
+      user_id: userIdSchema
+    },
+    ['params']
+  )
 )
 
 export const changePasswordValidator = validate(
@@ -510,15 +516,15 @@ export const changePasswordValidator = validate(
     old_password: {
       ...passwordSchema,
       custom: {
-        options: async( values: string, { req }) => {
+        options: async (values: string, { req }) => {
           const { user_id } = (req as Request).decoded_authorization as TokenPayload
           const user = await DatabaseService.user.findOne({ _id: new ObjectId(user_id) })
-          if(!user) {
+          if (!user) {
             throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
           }
           const { password } = user
           const isMatch = hashPassword(values) == password
-          if(!isMatch) {
+          if (!isMatch) {
             throw new ErrorWithStatus({
               message: USERS_MESSAGES.OLD_PASSWORD_DOES_NOT_MATCH,
               status: HTTP_STATUS.UNAUTHORIZED
@@ -530,6 +536,29 @@ export const changePasswordValidator = validate(
 
     //Change this because we are checking "new_password" not "confirm_new_password"
     new_password: passwordSchema,
-    confirm_new_password: confirmPasswordSchema("new_password")
+    confirm_new_password: confirmPasswordSchema('new_password')
   })
 )
+
+export const isUserLoggedInValidator = (middleware: (req: Request, res: Response, next: NextFunction) => void) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    // req.header: Express.js wrapper
+    // Function
+    // Access one header
+    // Case-insensitive lookup
+    // req.header('Authorization') === req.header('authorization')
+
+    // req.headers: Node.js (IncomingMessage)
+    // Object
+    // Access all headers
+    // Keys are automatically lowercased
+    // req.headers['Authorization'] !== req.headers['authorization']
+    //    (CORRECTION: req.headers['Authorization'] is undefined, only lowercase keys exist)
+    // Correct: req.headers['authorization']
+
+    if (req.headers.authorization) {
+      return middleware(req, res, next)
+    }
+    next()
+  }
+}
