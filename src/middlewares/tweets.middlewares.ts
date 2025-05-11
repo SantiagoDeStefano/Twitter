@@ -1,10 +1,13 @@
+import { Request, Response, NextFunction } from 'express'
+import { ParamsDictionary } from 'express-serve-static-core'
 import { checkSchema } from "express-validator"
 import { isEmpty } from "lodash"
 import { ObjectId } from "mongodb"
-import { MediaType, TweetAudience, TweetType } from "~/constants/enums"
+import { MediaType, TweetAudience, TweetType, UserVerifyStatus } from "~/constants/enums"
 import HTTP_STATUS from "~/constants/httpStatus"
-import { TWEETS_MESSAGES } from "~/constants/messages"
+import { TWEETS_MESSAGES, USERS_MESSAGES } from "~/constants/messages"
 import ErrorWithStatus from "~/models/Errors"
+import Tweet from '~/models/schemas/Tweet.schema'
 import DatabaseService from "~/services/database.services"
 import { numberEnumToArray } from "~/utils/commons"
 import { validate } from "~/utils/validation"
@@ -140,8 +143,52 @@ export const tweetIdValidator = validate(checkSchema({
             message: TWEETS_MESSAGES.TWEET_NOT_FOUND
           })
         }
+        req.tweet = tweet
         return true
       }
     }
   }
 }, ['params', 'body']))
+
+// Async await in handler express must have try catch
+// If not, use a wrapper function (wrapRequestHandler)
+export const audienceValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const tweet = req.tweet as Tweet
+  if(tweet.audience === TweetAudience.TwitterCircle) {
+    // Check if user logged in
+    if(!req.decoded_authorization) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.UNAUTHORIZED,
+        message: USERS_MESSAGES.ACCESS_TOKEN_REQUIRED
+      })
+    }
+
+    // Check if author account is banned or deleted
+    const author = await DatabaseService.user.findOne({
+      _id: new ObjectId(tweet.user_id)
+    })
+    if(!author || author.verify == UserVerifyStatus.Banned) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.NOT_FOUND,
+        message: USERS_MESSAGES.USER_NOT_FOUND
+      })
+    }
+
+    // Check if viewer is in Twitter Circle
+    const { user_id } = req.decoded_authorization
+    const isInTwitterCircle = author.twitter_circle?.some(
+      (user_circle_id) => user_circle_id.equals(user_id)
+    )
+    if(!isInTwitterCircle && !author._id.equals(user_id)) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.FORBIDDEN,
+        message: TWEETS_MESSAGES.TWEET_IS_NOT_PUBLIC
+      })
+    }
+  }
+  next()
+}

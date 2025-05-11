@@ -105,7 +105,8 @@ export const TWEETS_MESSAGES = {
   PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'ParentID must be a valid tweet id',
   PARENT_ID_MUST_BE_NULL: 'ParentID must be null',
 
-  TWEET_NOT_FOUND: 'Tweet notfound'
+  TWEET_NOT_FOUND: 'Tweet notfound',
+  TWEET_IS_NOT_PUBLIC: 'Tweet is not public'
 } as const
 
 export const BOOKMARKS_MESSAGES = {
