@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 import { TweetAudience, TweetType } from "~/constants/enums";
 import { Media } from "../Others";
 
+// Requests
 export interface TweetRequestBody {
   type: TweetType
   audience: TweetAudience

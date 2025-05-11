@@ -11,7 +11,7 @@ export const USERS_MESSAGES = {
   CONFIRM_PASSWORD_IS_REQUIRED: 'Password confirmation is required',
   CONFIRM_PASSWORD_MUST_BE_A_STRING: 'Password confirmation must be a string',
   CONFIRM_PASSWORD_MUST_BE_FROM_8_TO_16: 'Password confirmation must be between 8 and 16',
-  CHANGE_PASSWORD_SUCCESS:'Change password successfully',
+  CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
 
   DATE_OF_BIRTH_IS_REQUIRED: 'Date of birth is required',
 
@@ -24,14 +24,14 @@ export const USERS_MESSAGES = {
   EMAIL_VERIFY_SUCCESS: 'Email verified successfully',
   EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required',
   EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
-  
+
   FORGOT_PASSWORD_TOKEN_REQUIRED: 'Forgot password token is required',
   FOLLOW_SUCCESS: 'Follow success',
-  
+
   GET_ME_SUCCESS: 'Get my profile success',
   GET_PROFILE_SUCCESS: 'Get profile success',
   GMAIL_NOT_VERIFIED: 'Email is not verified',
-  
+
   INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
   IMAGE_URL_MUST_BE_A_STRING: 'Image URL must be a string',
   IMAGE_URL_MUST_BE_BETWEEN_1_AND_400: 'Image URL must be between 1 and 400',
@@ -75,7 +75,8 @@ export const USERS_MESSAGES = {
   WEBSITE_MUST_BE_A_STRING: 'Website must be a string',
   WEBSITE_LENGTH_MUST_BE_BETWEEN_1_AND_200: 'Website must be between 1 and 200',
 
-  STRONG_PASSWORD: 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character',
+  STRONG_PASSWORD:
+    'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character'
 } as const
 
 export const MEDIAS_MESSAGES = {
@@ -98,11 +99,13 @@ export const TWEETS_MESSAGES = {
   MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'Medias must be a valid array of media objects',
 
   PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'ParentID must be a valid tweet id',
-  PARENT_ID_MUST_BE_NULL: 'ParentID must be null',
-} as const 
+  PARENT_ID_MUST_BE_NULL: 'ParentID must be null'
+} as const
 
 export const BOOKMARKS_MESSAGES = {
-  BOOKMARKS_TWEET_SUCCESSFULLY: 'Bookmarked tweet successfully'
+  BOOKMARKS_TWEET_SUCCESSFULLY: 'Bookmarked tweet successfully',
+
+  UNBOOKMARKS_TWEET_SUCCESSFULLY: 'Unbookmarked tweet successfully'
 } as const
 
 export const LIKES_MESSAGES = {
