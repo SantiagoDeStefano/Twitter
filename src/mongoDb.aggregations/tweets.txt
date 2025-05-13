@@ -1,0 +1,97 @@
+Stage 1:
+$match
+/**
+ * query: The query in MQL.
+ */
+{
+  _id: ObjectId('')
+}
+
+Stage 2:
+$lookup
+/**
+ * from: The target collection.
+ * localField: The local join field.
+ * foreignField: The target join field.
+ * as: The name for the results.
+ * pipeline: Optional pipeline to run on the foreign collection.
+ * let: Optional variables to use in the pipeline field stages.
+ */
+{
+  from: "hashtags",
+  localField: "hashtags",
+  foreignField: "_id",
+  as: "hashtags"
+}
+
+Stage 3:
+$lookup
+/**
+ * from: The target collection.
+ * localField: The local join field.
+ * foreignField: The target join field.
+ * as: The name for the results.
+ * pipeline: Optional pipeline to run on the foreign collection.
+ * let: Optional variables to use in the pipeline field stages.
+ */
+{
+  from: "users",
+  localField: "mentions",
+  foreignField: "_id",
+  as: "mentions"
+}
+
+Stage 4:
+$addFields
+/**
+ * specifications: The fields to
+ *   include or exclude.
+ */
+{
+  mentions: {
+    $map: {
+      input: "$mentions",
+      as: "mention",
+      in: {
+        _id: "$$mention._id",
+        name: "$$mention.name",
+        username: "$$mention.username",
+        email: "$$mention.email"
+      }
+    }
+  }
+}
+
+Stage 5:
+$lookup
+/**
+ * from: The target collection.
+ * localField: The local join field.
+ * foreignField: The target join field.
+ * as: The name for the results.
+ * pipeline: Optional pipeline to run on the foreign collection.
+ * let: Optional variables to use in the pipeline field stages.
+ */
+{
+  from: "bookmarks",
+  localField: "_id",
+  foreignField: "tweet_id",
+  as: "bookmarks"
+}
+
+Stage 6:
+$lookup
+/**
+ * from: The target collection.
+ * localField: The local join field.
+ * foreignField: The target join field.
+ * as: The name for the results.
+ * pipeline: Optional pipeline to run on the foreign collection.
+ * let: Optional variables to use in the pipeline field stages.
+ */
+{
+  from: "likes",
+  localField: "_id",
+  foreignField: "tweet_id",
+  as: "likes"
+}
