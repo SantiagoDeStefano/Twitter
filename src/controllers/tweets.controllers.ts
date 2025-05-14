@@ -21,10 +21,13 @@ export const getTweetController = async (
   req: Request<ParamsDictionary, any, GetTweetRequestParams>,
   res: Response
 ): Promise<void> => {
+
+  // Query database, we can either add queries in mongoDB or 
+
   const { tweet_id: get_tweet_id } = req.params
   const result = await tweetsService.getTweet(get_tweet_id)
   res.json({
     message: TWEETS_MESSAGES.GET_TWEET_SUCCESSFULLY,
-    result
+    result: req.tweet
   })
 }

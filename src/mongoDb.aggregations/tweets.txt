@@ -95,3 +95,75 @@ $lookup
   foreignField: "tweet_id",
   as: "likes"
 }
+
+Stage 7:
+$lookup
+/**
+ * from: The target collection.
+ * localField: The local join field.
+ * foreignField: The target join field.
+ * as: The name for the results.
+ * pipeline: Optional pipeline to run on the foreign collection.
+ * let: Optional variables to use in the pipeline field stages.
+ */
+{
+  from: "tweets",
+  localField: "_id",
+  foreignField: "parent_id",
+  as: "tweet_children"
+}
+
+Stage 8:
+$addFields
+/**
+ * newField: The new field name.
+ * expression: The new field expression.
+ */
+{
+  bookmarks: {
+    $size: "$bookmarks"
+  },
+  likes: {
+    $size: "$likes"
+  },
+  retweet_count: {
+    $size: {
+      $filter: {
+        input: "$tweet_children",
+        as: "item",
+        cond: {$eq: ["$$item.type", 1]}
+      }
+    }
+  },
+  comment_count: {
+    $size: {
+      $filter: {
+        input: "$tweet_children",
+        as: "item",
+        cond: {$eq: ["$$item.type", 2]}
+      }
+    }
+  },
+  quote_count: {
+    $size: {
+      $filter: {
+        input: "$tweet_children",
+        as: "item",
+        cond: {$eq: ["$$item.type", 3]}
+      }
+    }
+  },
+  views: {
+    $add: ["$user_views", "$guest_views"]
+  }
+}
+
+Stage 9:
+$project
+/**
+ * specifications: The fields to
+ *   include or exclude.
+ */
+{
+  tweet_children: 0
+}
