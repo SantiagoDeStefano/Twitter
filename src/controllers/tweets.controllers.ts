@@ -24,10 +24,21 @@ export const getTweetController = async (
 
   // Query database, we can either add queries in mongoDB or 
 
+  // const { tweet_id: get_tweet_id } = req.params
+  // const result = await tweetsService.getTweet(get_tweet_id)
+
   const { tweet_id: get_tweet_id } = req.params
-  const result = await tweetsService.getTweet(get_tweet_id)
+  const  user_id = (req.decoded_authorization as TokenPayload)?.user_id
+
+  const result = await tweetsService.increaseView(get_tweet_id, user_id)
+  const tweet = {
+    ...req.tweet,
+    guest_views: result?.guest_views,
+    user_views: result?.user_views
+  }
+
   res.json({
     message: TWEETS_MESSAGES.GET_TWEET_SUCCESSFULLY,
-    result: req.tweet
+    result: tweet
   })
 }

@@ -239,11 +239,11 @@ export const tweetIdValidator = validate(checkSchema({
                     }
                   }
                 }, 
-                'views': {
-                  '$add': [
-                    '$user_views', '$guest_views'
-                  ]
-                }
+                // 'views': {
+                //   '$add': [
+                //     '$user_views', '$guest_views'
+                //   ]
+                // }
               }
             }, {
               '$project': {

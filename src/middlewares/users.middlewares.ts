@@ -265,6 +265,7 @@ export const accessTokenValidator = validate(
                 status: HTTP_STATUS.UNAUTHORIZED
               })
             }
+            return true
           }
         }
       }
