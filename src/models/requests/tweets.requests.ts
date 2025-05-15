@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { TweetAudience, TweetType } from "~/constants/enums";
-import { ParamsDictionary } from 'express-serve-static-core';
+import { ParamsDictionary, Query } from 'express-serve-static-core';
 import { Media } from "../Others";
 
 // Body
@@ -24,8 +24,8 @@ export interface GetTweetChildrenRequestParams extends ParamsDictionary {
 }
 
 // Query
-export interface GetTweetChildrenRequestQuery {
-  tweet_type?: TweetType
-  limit?: number
-  page?: number
+export interface GetTweetChildrenRequestQuery extends Query {
+  tweet_type: string
+  limit: string
+  page: string
 }

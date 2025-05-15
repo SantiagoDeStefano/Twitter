@@ -307,3 +307,39 @@ export const audienceValidator = async (
   }
   next()
 }
+
+export const getTweetChildrenValidator = validate(
+  checkSchema(
+    {
+      tweet_type: {
+        isIn: {
+          options: [tweetTypes],
+          errorMessage: TWEETS_MESSAGES.INVALID_TWEET_TYPE
+        }
+      },
+      limit: {
+        isNumeric: true,
+        custom: {
+          options: async ( value, { req } ) => {
+            const num = Number(value)
+            if(num > 100 || num < 1) {
+              throw new Error(TWEETS_MESSAGES.MAXIMUM_TWEETS_PER_PAGE_IS_BETWEEN_1_AND_100)
+            }
+          }
+        }
+      },
+      page: {
+        isNumeric: true,
+        custom: {
+          options: async ( values, { req } ) => {
+            const num = Number(values)
+            if(num < 1) {
+              throw new Error(TWEETS_MESSAGES.NUMBER_OF_PAGE_MUST_BE_GREATER_THAN_0)
+            }
+          }
+        }
+      }
+    },
+    ['query']
+  )
+)

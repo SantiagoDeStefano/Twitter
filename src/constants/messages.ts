@@ -101,7 +101,9 @@ export const TWEETS_MESSAGES = {
 
   MENTIONS_MUST_BE_A_VALID_ARRAY_OF_USER_ID: 'Mentions must be a valid array of userId',
   MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'Medias must be a valid array of media objects',
-
+  MAXIMUM_TWEETS_PER_PAGE_IS_BETWEEN_1_AND_100: 'Maximum tweets per page is between 1 and 100',
+  NUMBER_OF_PAGE_MUST_BE_GREATER_THAN_0: 'Number of page must be greater than 0',
+  
   PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'ParentID must be a valid tweet id',
   PARENT_ID_MUST_BE_NULL: 'ParentID must be null',
 
