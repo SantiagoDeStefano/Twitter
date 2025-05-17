@@ -197,10 +197,10 @@ class TweetsService {
                   }
                 }
               }
+            },
+            views: {
+              $add: ['$user_views', '$guest_views']
             }
-            // views: {
-            //   $add: ['$user_views', '$guest_views']
-            // }
           }
         },
         {
@@ -442,7 +442,8 @@ class TweetsService {
             user: {
               name: 1,
               email: 1
-            }
+            },
+            user_views: 1
           }
         },
         {
@@ -526,7 +527,7 @@ class TweetsService {
     // So we needed to do these
     tweets.forEach((tweet) => {
       tweet.updated_at = date
-        ;(tweet.user_views as number) = (tweet.user_views as number) + 1
+      ;(tweet.user_views as number) = (tweet.user_views as number) + 1
     })
     return {
       tweets,
