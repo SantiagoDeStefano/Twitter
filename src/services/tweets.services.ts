@@ -279,7 +279,8 @@ class TweetsService {
     const ids = followed_user_ids.map((item) => item.followed_user_id)
     // Newfeeds would take user_id's tweet also
     ids.push(user_object_id)
-    const tweets = await DatabaseService.tweets
+    const [tweets, total] = await Promise.all([
+      DatabaseService.tweets
       .aggregate([
         {
           $match: {
@@ -450,9 +451,87 @@ class TweetsService {
         {
           $limit: limit
         }
-      ])
-      .toArray() as Tweet[]
-    return tweets
+      ]).toArray(),
+      DatabaseService.tweets
+      .aggregate([
+        {
+          $match: {
+            user_id: {
+              $in: ids
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: {
+            path: '$user'
+          }
+        },
+        {
+          $match: {
+            $or: [
+              {
+                audience: TweetAudience.Everyone
+              },
+              {
+                $and: [
+                  {
+                    audience: TweetAudience.TwitterCircle
+                  },
+                  {
+                    'user.twitter_circle': {
+                      $in: [user_object_id]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }, 
+        {
+          $count: 'total'
+        }
+      ]).toArray()
+    ])
+
+    const tweet_ids = tweets.map((tweet) => tweet._id as ObjectId)
+    // updateMany didn't return the document
+    // new Date() counted as server run
+    const date = new Date()
+
+    DatabaseService.tweets.updateMany(
+      {
+        _id: {
+          $in: tweet_ids
+        }
+      },
+      {
+        // Only get newfeeds after logged in
+        $inc: { user_views: 1 },
+        $set: {
+          updated_at: date
+        }
+      }
+    )
+
+    // updateMany didn't return the document back to the user
+    // While we must return it.
+    // So we needed to do these
+    tweets.forEach((tweet) => {
+      tweet.updated_at = date
+        ;(tweet.user_views as number) = (tweet.user_views as number) + 1
+    })
+    return {
+      tweets,
+      total: total[0].total
+    }
   }
 }
 
