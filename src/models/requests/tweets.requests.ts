@@ -29,3 +29,8 @@ export interface GetTweetChildrenRequestQuery extends Query {
   limit: string
   page: string
 }
+
+export interface Pagination extends Query {
+  limit: string,
+  page: string
+}

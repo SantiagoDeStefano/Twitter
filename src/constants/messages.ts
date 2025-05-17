@@ -92,6 +92,7 @@ export const TWEETS_MESSAGES = {
 
   GET_TWEET_SUCCESSFULLY: 'Get tweet successfully',
   GET_TWEET_CHILDREN_SUCCESSFULLY: 'Get tweet children successfully',
+  GET_NEWFEEDS_SUCCESSFULLY: 'Get newfeeds successfully',
 
   HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING: 'Hashtags must be an array of string',
 
