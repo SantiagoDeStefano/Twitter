@@ -11,13 +11,15 @@ class SearchService {
     page,
     content,
     media_type,
-    user_id
+    user_id,
+    people_follow
   }: {
     limit: number
     page: number
     content: string
-    media_type: MediaTypeQuery
+    media_type?: MediaTypeQuery
     user_id: string
+    people_follow?: string
   }) {
     const match: any = {
       $text: {
@@ -35,7 +37,32 @@ class SearchService {
       }
     }
 
+    if (people_follow === 'true') {
+      const user_object_id = new ObjectId(user_id)
+      const followed_user_ids = await DatabaseService.followers
+        .find(
+          {
+            user_id: user_object_id
+          },
+          {
+            projection: {
+              followed_user_id: 1,
+              _id: 0
+            }
+          }
+        )
+        .toArray()
+      const ids = followed_user_ids.map((item) => item.followed_user_id)
+      // Newfeeds would take user_id's tweet also
+      ids.push(user_object_id)
+      match['user_id'] = {
+        $in: ids
+      }
+    }
+
     const user_object_id = new ObjectId(user_id)
+    console.log(match)
+
     const [tweets, total] = await Promise.all([
       DatabaseService.tweets
         .aggregate([
@@ -282,7 +309,7 @@ class SearchService {
 
     return {
       tweets,
-      total: total[0].total
+      total: total[0]?.total || 0
     }
   }
 }
