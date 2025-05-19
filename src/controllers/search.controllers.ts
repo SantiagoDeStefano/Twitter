@@ -13,7 +13,7 @@ export const searchController = async (
   const content = req.query.content
   const media_type = req.query.media_type
   const user_id = req.decoded_authorization?.user_id as string
-  const people_follow = req.query.people_follow 
+  const people_follow = req.query.people_follow
 
   const result = await searchService.search({
     limit,

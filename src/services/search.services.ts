@@ -1,7 +1,7 @@
 import { SearchQuery } from '~/models/requests/search.requests'
 import DatabaseService from './database.services'
 import { ObjectId } from 'mongodb'
-import { MediaType, MediaTypeQuery, TweetAudience, TweetType } from '~/constants/enums'
+import { MediaType, MediaTypeQuery, PeopleFollow, TweetAudience, TweetType } from '~/constants/enums'
 import Tweet from '~/models/schemas/Tweet.schema'
 
 class SearchService {
@@ -19,7 +19,7 @@ class SearchService {
     content: string
     media_type?: MediaTypeQuery
     user_id: string
-    people_follow?: string
+    people_follow?: PeopleFollow
   }) {
     const match: any = {
       $text: {
@@ -37,7 +37,7 @@ class SearchService {
       }
     }
 
-    if (people_follow === 'true') {
+    if (people_follow === PeopleFollow.Following) {
       const user_object_id = new ObjectId(user_id)
       const followed_user_ids = await DatabaseService.followers
         .find(

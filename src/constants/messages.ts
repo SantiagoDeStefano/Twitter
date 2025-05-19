@@ -125,5 +125,8 @@ export const LIKES_MESSAGES = {
 } as const
 
 export const SEARCH_MESSAGES = {
-  SEARCHED_SUCCESSFULLY: 'Seached successfully'
+  PEOPLE_FOLLOW_MUST_BE_TRUE_OR_FALSE: 'Option to show tweet of followed people must be true or false',
+
+  SEARCHED_SUCCESSFULLY: 'Seached successfully',
+  SEARCH_CONTENT_MUST_BE_STRING: 'Searchs content must be a string'
 } as const
