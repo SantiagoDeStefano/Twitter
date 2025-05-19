@@ -23,6 +23,7 @@ DatabaseService.connect().then(() => {
   DatabaseService.indexRefreshToken()
   DatabaseService.indexFollowers()
   DatabaseService.indexVideoStatus()
+  DatabaseService.indexTweets()
 })
 
 const app = express()

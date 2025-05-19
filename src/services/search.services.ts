@@ -1,23 +1,46 @@
-import { SearchQuery } from '~/models/requests/seach.requests'
+import { SearchQuery } from '~/models/requests/search.requests'
 import DatabaseService from './database.services'
 import { ObjectId } from 'mongodb'
-import { TweetAudience, TweetType } from '~/constants/enums'
+import { MediaType, MediaTypeQuery, TweetAudience, TweetType } from '~/constants/enums'
 import Tweet from '~/models/schemas/Tweet.schema'
 
 class SearchService {
   // Override the pagination
-  async search({ limit, page, content, user_id }: { limit: number; page: number; content: string; user_id: string }) {
-    const user_object_id = new ObjectId(user_id)
+  async search({
+    limit,
+    page,
+    content,
+    media_type,
+    user_id
+  }: {
+    limit: number
+    page: number
+    content: string
+    media_type: MediaTypeQuery
+    user_id: string
+  }) {
+    const match: any = {
+      $text: {
+        $search: content
+      }
+    }
 
+    if (media_type) {
+      if (media_type === MediaTypeQuery.Image) {
+        match['medias.type'] = MediaType.Image
+      } else if (media_type === MediaTypeQuery.Video) {
+        match['medias.type'] = {
+          $in: [MediaType.Video, MediaType.HLS]
+        }
+      }
+    }
+
+    const user_object_id = new ObjectId(user_id)
     const [tweets, total] = await Promise.all([
       DatabaseService.tweets
         .aggregate([
           {
-            $match: {
-              $text: {
-                $search: content
-              }
-            }
+            $match: match
           },
           {
             $lookup: {
@@ -186,11 +209,7 @@ class SearchService {
       DatabaseService.tweets
         .aggregate([
           {
-            $match: {
-              $text: {
-                $search: content
-              }
-            }
+            $match: match
           },
           {
             $lookup: {
