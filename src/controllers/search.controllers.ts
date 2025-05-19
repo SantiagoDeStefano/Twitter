@@ -1,0 +1,32 @@
+import { Request, Response, NextFunction, query } from 'express'
+import { Params, ParamsDictionary } from 'express-serve-static-core'
+import { SEARCH_MESSAGES } from '~/constants/messages'
+import { SearchQuery } from '~/models/requests/seach.requests'
+import searchService from '~/services/search.services'
+
+export const searchController = async (
+  req: Request<ParamsDictionary, any, any, SearchQuery>,
+  res: Response
+): Promise<void> => {
+  const limit = Number(req.query.limit)
+  const page = Number(req.query.page)
+  const content = req.query.content
+  const user_id = req.decoded_authorization?.user_id as string
+
+  const result = await searchService.search({
+    limit,
+    page,
+    content: content,
+    user_id: user_id
+  })
+  res.json({
+    message: SEARCH_MESSAGES.SEARCHED_SUCCESSFULLY,
+    result: {
+      tweets: result.tweets,
+      limit,
+      page,
+      total_pages: Math.ceil(result.total/limit)
+    }
+  })
+  return
+}

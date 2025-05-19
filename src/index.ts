@@ -12,6 +12,8 @@ import cors from 'cors'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likeRoutes from './routes/likes.routes'
+import { searchController } from './controllers/search.controllers'
+import searchRouter from './routes/search.routes'
 // import '~/utils/fake'
 
 config()
@@ -38,6 +40,7 @@ app.use('/medias', mediasRouter)
 app.use('/tweets', tweetsRouter)
 app.use('/bookmarks', bookmarksRouter)
 app.use('/likes', likeRoutes)
+app.use('/search', searchRouter)
 app.use('/static', staticRouter)
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 
