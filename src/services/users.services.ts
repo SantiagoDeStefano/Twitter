@@ -14,6 +14,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import Follower from '~/models/schemas/Follower.schema'
 import axios from 'axios'
 import { generateStrongPassword } from '~/utils/randompassword'
+import { sendVerifyEmail } from '~/utils/email'
 
 config()
 
@@ -32,16 +33,24 @@ class UserService {
     }) as Promise<string>
   }
 
-  private signRefreshToken({ user_id, verify, exp }: { user_id: string; verify: UserVerifyStatus; exp?: number }): Promise<string> {
-    if(exp) {
+  private signRefreshToken({
+    user_id,
+    verify,
+    exp
+  }: {
+    user_id: string
+    verify: UserVerifyStatus
+    exp?: number
+  }): Promise<string> {
+    if (exp) {
       return signToken({
         payload: {
           user_id,
           token_type: TokenType.RefreshToken,
           verify,
-          exp 
+          exp
         },
-        privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
+        privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
       }) as Promise<string>
     }
     return signToken({
@@ -92,7 +101,7 @@ class UserService {
 
   async login({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, verify: verify })
-    
+
     const { iat, exp } = await this.decodeRefreshToken(refresh_token)
 
     await DatabaseService.refreshToken.insertOne(
@@ -140,6 +149,21 @@ class UserService {
         exp
       })
     )
+
+    // Flow verify email
+    // 1. Server sending email to user
+    // 2. User click link inside email body
+    // 3. Client send request to server with email_verify_token
+    // 4. Server verify user with user's email_verify_token
+    // 5. Send access_token and refresh_token to Client
+
+    await sendVerifyEmail(
+      payload.email,
+      'Verify your email',
+      `<h1>Verify your email</h1>
+      <p>Click <a href="${process.env.CLIENT_URL}/verify-email?token=${email_verify_token}">Here</a> to verify your email</p>`
+    )
+
     return {
       access_token,
       refresh_token,
@@ -209,9 +233,9 @@ class UserService {
     ])
 
     const [access_token, refresh_token] = tokens
-    
+
     const { iat, exp } = await this.decodeRefreshToken(refresh_token)
-    
+
     await DatabaseService.refreshToken.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
