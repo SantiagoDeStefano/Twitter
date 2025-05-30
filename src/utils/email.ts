@@ -1,5 +1,8 @@
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
+import { isUtf8 } from 'buffer'
 import { config } from 'dotenv'
+import fs from 'fs'
+import path from 'path'
 
 config()
 
@@ -16,6 +19,8 @@ export const sesClient = new SESClient({
   }
 })
 
+export const verifyEmailTemplate = fs.readFileSync(path.resolve('src/templates/verify-email.html'), 'utf-8')
+
 export const createSendEmailCommand = ({
   fromAddress,
   toAddresses,
@@ -24,11 +29,11 @@ export const createSendEmailCommand = ({
   subject,
   replyToAddresses = []
 }: {
-  fromAddress: string,
-  toAddresses: string | string[],
-  ccAddresses?: string | string[],
-  body: string,
-  subject: string,
+  fromAddress: string
+  toAddresses: string | string[]
+  ccAddresses?: string | string[]
+  body: string
+  subject: string
   replyToAddresses?: string | string[]
 }) => {
   return new SendEmailCommand({
@@ -56,7 +61,8 @@ export const createSendEmailCommand = ({
   })
 }
 
-export const sendVerifyEmail = async (toAddress: string, subject: string, body: string) => {
+const sendVerifyEmail = async (toAddress: string, subject: string, body: string) => {
+  console.log('Sent')
   const sendEmailCommand = createSendEmailCommand({
     fromAddress: process.env.SES_FROM_ADDRESS as string,
     toAddresses: toAddress,
@@ -70,4 +76,37 @@ export const sendVerifyEmail = async (toAddress: string, subject: string, body: 
     console.error('Failed to send email.')
     return e
   }
-} 
+}
+
+
+export const sendVerifyRegisterEmail = (
+  toAddress: string,
+  email_verify_token: string,
+  template: string = verifyEmailTemplate
+) => {
+  return sendVerifyEmail(
+    toAddress,
+    'Verify your email',
+    template
+      .replace('{{title}}', 'Please verify your email')
+      .replace('{{content}}', 'Click the button below to verify your email')
+      .replace('{{button}}', 'Verify your email')
+      .replace('{{titleLink}}', `${process.env.CLIENT_URL}/verify-email?token=${email_verify_token}`)
+  )
+}
+
+export const sendForgotPasswordEmail = (
+  toAddress: string,
+  forgot_password_token: string,
+  template: string = verifyEmailTemplate
+) => {
+  return sendVerifyEmail(
+    toAddress,
+    'Reset password',
+    template
+      .replace('{{title}}', 'You are receiving this email because you requested to reset your password')
+      .replace('{{content}}', 'Click the button below to reset your password')
+      .replace('{{button}}', 'Reset password')
+      .replace('{{titleLink}}', `${process.env.CLIENT_URL}/reset-password?token=${forgot_password_token}`)
+  )
+}

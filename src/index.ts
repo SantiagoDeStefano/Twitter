@@ -12,7 +12,6 @@ import cors from 'cors'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likeRoutes from './routes/likes.routes'
-import { searchController } from './controllers/search.controllers'
 import searchRouter from './routes/search.routes'
 // import '~/utils/fake'
 
