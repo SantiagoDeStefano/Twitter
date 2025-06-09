@@ -2,9 +2,9 @@ import {
   createBrowserRouter,
 } from "react-router-dom";
 
-import React from "react";
 import Home from "./Home";
 import Login from "./Login";
+import VerifyEmail from "./VerifyEmail";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +15,10 @@ const router = createBrowserRouter([
     path: "/login/oauth",
     element: <Login />
   },
+  {
+    path: "/email-verification",
+    element: <VerifyEmail />
+  }
 ]);
 
 export default router;

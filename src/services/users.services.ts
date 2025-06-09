@@ -157,6 +157,7 @@ class UserService {
     // 4. Server verify user with user's email_verify_token
     // 5. Send access_token and refresh_token to Client
 
+    console.log("Register method has sent an email")
     await sendVerifyRegisterEmail(
       payload.email,
       email_verify_token

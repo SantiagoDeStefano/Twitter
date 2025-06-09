@@ -62,10 +62,9 @@ export const createSendEmailCommand = ({
 }
 
 const sendVerifyEmail = async (toAddress: string, subject: string, body: string) => {
-  console.log('Sent')
   const sendEmailCommand = createSendEmailCommand({
     fromAddress: process.env.SES_FROM_ADDRESS as string,
-    toAddresses: toAddress,
+    toAddresses: 'khoinguyenpkn@gmail.com',
     body,
     subject
   })
@@ -91,7 +90,8 @@ export const sendVerifyRegisterEmail = (
       .replace('{{title}}', 'Please verify your email')
       .replace('{{content}}', 'Click the button below to verify your email')
       .replace('{{button}}', 'Verify your email')
-      .replace('{{titleLink}}', `${process.env.CLIENT_URL}/verify-email?token=${email_verify_token}`)
+      .replace('{{titleLink}}', 'Link')
+      .replace('{{link}}', `${process.env.CLIENT_URL}/email-verification?token=${email_verify_token}`)
   )
 }
 
@@ -107,6 +107,7 @@ export const sendForgotPasswordEmail = (
       .replace('{{title}}', 'You are receiving this email because you requested to reset your password')
       .replace('{{content}}', 'Click the button below to reset your password')
       .replace('{{button}}', 'Reset password')
-      .replace('{{titleLink}}', `${process.env.CLIENT_URL}/reset-password?token=${forgot_password_token}`)
+      .replace('{{titleLink}}', 'Link')
+      .replace('{{link}}', `${process.env.CLIENT_URL}/reset-password?token=${forgot_password_token}`)
   )
 }
