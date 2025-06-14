@@ -152,7 +152,7 @@ usersRouter.post(
  * Body: { forgot_password_token: string }
  */
 usersRouter.post(
-  '/verity-forgot-password', 
+  '/verify-forgot-password', 
   verifyForgotPasswordTokenValidator,
   wrapRequestHandler(verifyForgotPasswordController)
 ) 

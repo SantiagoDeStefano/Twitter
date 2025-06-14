@@ -5,19 +5,29 @@ import {
 import Home from "./Home";
 import Login from "./Login";
 import VerifyEmail from "./VerifyEmail";
+import VerifyForgotPasswordToken from "./VerifyForgotPasswordToken";
+import ResetPassword from "./ResetPassword";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <Home />
   },
   {
-    path: "/login/oauth",
+    path: '/login/oauth',
     element: <Login />
   },
   {
-    path: "/email-verification",
+    path: '/email-verification',
     element: <VerifyEmail />
+  },
+  {
+    path: '/forgot-password',
+    element: <VerifyForgotPasswordToken />
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPassword />
   }
 ]);
 

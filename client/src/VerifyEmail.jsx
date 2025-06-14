@@ -26,7 +26,7 @@ export default function VerifyEmail() {
           }
         })
         .catch((error) => {
-          setMessage(error.response.data.nessage)
+          setMessage(error.response.data.message)
         })
     }
     return () => {
