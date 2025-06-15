@@ -40,7 +40,6 @@ import {
 import { wrapRequestHandler } from '~/utils/handlers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import { UpdateMeRequestBody } from '~/models/requests/users.requests'
-import { wrap } from 'lodash'
 
 const usersRouter = Router()
 

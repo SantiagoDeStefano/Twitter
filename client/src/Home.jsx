@@ -50,7 +50,7 @@ export default function Home() {
         <source src='http://localhost:4000/static/video/3390ba734d8d1619b887f9100.mp4' type='video/mp4' />
       </video> */}
       <h2>HLS Streaming</h2>
-      <MediaPlayer title='Sprite Fight' src='http://localhost:4000/static/video-hls/vgp8xXeXZ_Juo_36uh7rf/master.m3u8'>
+      <MediaPlayer title='Sprite Fight' src='http://localhost:4000/static/video-hls/wbYhLDMafBqlFKJ_baA8I/master.m3u8'>
         <MediaProvider />
       </MediaPlayer>
       <h1>Google OAuth 2.0</h1>
