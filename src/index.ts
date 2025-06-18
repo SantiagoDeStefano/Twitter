@@ -13,6 +13,8 @@ import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likeRoutes from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
 // import '~/utils/s3'
 // import '~/utils/fake'
 
@@ -27,6 +29,9 @@ DatabaseService.connect().then(() => {
 })
 
 const app = express()
+
+const httpServer = createServer(app)
+
 app.use(cors())
 const port = process.env.PORT
 
@@ -47,6 +52,24 @@ app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 
 app.use(defaultErrorHandler)
 
-app.listen(port, () => {
+// app.listen(port, () => {
+//   console.log(`Example app listening on port ${port}`)
+// })
+
+const io = new Server(httpServer, {
+  // Options
+  cors: {
+    origin: 'http://localhost:3000'
+  }
+})
+
+io.on('connection', (socket) => {
+  console.log(`User ${socket.id} connected`)
+  socket.on('disconnect', () => {
+    console.log(`User ${socket.id} disconnected`)
+  })
+})
+
+httpServer.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

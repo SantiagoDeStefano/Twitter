@@ -6,7 +6,7 @@ const root = document.getElementById('root')
 
 createRoot(root).render(
   // Remove React.StrictMode and verify-email only call one time
-  <React.StrictMode>
+  // <React.StrictMode>
     <App />
-  </React.StrictMode>
+  // </React.StrictMode>
 )
