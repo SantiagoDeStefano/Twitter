@@ -64,9 +64,9 @@ const io = new Server(httpServer, {
 })
 
 io.on('connection', (socket) => {
-  console.log(`User ${socket.id} connected`)
-  socket.on('disconnect', () => {
-    console.log(`User ${socket.id} disconnected`)
+  socket.emit("user_connection", socket.id)
+  socket.on("hello_to_server", (args) => {
+    console.log(args)
   })
 })
 

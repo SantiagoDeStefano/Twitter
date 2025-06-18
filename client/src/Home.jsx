@@ -29,6 +29,7 @@ const googleOAuthUrl = getGoogleAuthUrl()
 
 export default function Home() {
   const isAuthenticated = Boolean(localStorage.getItem('access_token'))
+  const profile = JSON.parse(localStorage.getItem('profile')) || {}
   const logout = () => {
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
@@ -50,14 +51,14 @@ export default function Home() {
         <source src='http://localhost:4000/static/video/3390ba734d8d1619b887f9100.mp4' type='video/mp4' />
       </video> */}
       <h2>HLS Streaming</h2>
-      <MediaPlayer title='Sprite Fight' src='http://localhost:4000/static/video-hls/wbYhLDMafBqlFKJ_baA8I/master.m3u8'>
+      <MediaPlayer title='Sprite Fight' src='http://localhost:4000/static/video-hls/I3W9F4RQ3fz7SUCJB-F7C/master.m3u8'>
         <MediaProvider />
       </MediaPlayer>
       <h1>Google OAuth 2.0</h1>
       <p className='read-the-docs'>
         {isAuthenticated ? (
           <>
-            <span>You are logged in.</span>
+            <span>Hello <strong>{profile.email}</strong> are logged in.</span>
             <button onClick={logout}>Logout</button>
           </>
         ) : (
