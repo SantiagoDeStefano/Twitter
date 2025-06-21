@@ -40,3 +40,34 @@
 .read-the-docs {
   color: #888;
 }
+
+.chat {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
+.message-container {
+  display: flex;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  
+}
+
+.message-received {
+  max-width: 60%;
+  margin-right: auto;
+  margin-bottom: 10px;
+  text-align: left;
+  background-color: rgb(43, 226, 226);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.message-sent {
+  max-width: 60%;
+  margin-left: auto;
+  margin-bottom: 10px;
+  text-align: right;
+  background-color: rgb(43, 226, 226);
+  padding: 10px;
+  border-radius: 5px;
+}

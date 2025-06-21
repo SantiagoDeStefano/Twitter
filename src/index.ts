@@ -79,15 +79,16 @@ io.on('connection', (socket) => {
   console.log(users)
 
   socket.on('private_message', (data) => {
-    console.log(data)
-    const receiver_socket_id = users[data.to._id].socket_id
+    const receiver_socket_id = users[data.to._id]?.socket_id
+    if (!receiver_socket_id) {
+      return
+    }
+
     socket.to(receiver_socket_id).emit('received_private_message', {
       content: data.content,
       from: user_id
     })
   })
-
-  
 
   socket.on('disconnect', () => {
     delete users[user_id]
