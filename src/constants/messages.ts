@@ -130,3 +130,7 @@ export const SEARCH_MESSAGES = {
   SEARCHED_SUCCESSFULLY: 'Seached successfully',
   SEARCH_CONTENT_MUST_BE_STRING: 'Searchs content must be a string'
 } as const
+
+export const CONVERSATIONS_MESSAGES = {
+  GET_CONVERSATIONS_SUCCESSFULLY: 'Get conversations successfully'
+} as const

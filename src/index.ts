@@ -15,6 +15,9 @@ import likeRoutes from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import { ObjectId } from 'mongodb'
+import Conversation from './models/schemas/Conversations.schema'
+import conversationsRouter from './routes/conversations.routes'
 // import '~/utils/s3'
 // import '~/utils/fake'
 
@@ -47,6 +50,8 @@ app.use('/tweets', tweetsRouter)
 app.use('/bookmarks', bookmarksRouter)
 app.use('/likes', likeRoutes)
 app.use('/search', searchRouter)
+app.use('/conversations', conversationsRouter)
+
 app.use('/static', staticRouter)
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 
@@ -75,14 +80,21 @@ io.on('connection', (socket) => {
   users[user_id] = {
     socket_id: socket.id
   }
-
-  console.log(users)
-
-  socket.on('private_message', (data) => {
+  socket.on('private_message', async (data) => {
     const receiver_socket_id = users[data.to._id]?.socket_id
     if (!receiver_socket_id) {
       return
     }
+
+    console.log(data)
+
+    await DatabaseService.conversations.insertOne(
+      new Conversation({
+        sender_id: new ObjectId(data.from._id),
+        receiver_id: new ObjectId(data.to._id),
+        content: data.content
+      })
+    )
 
     socket.to(receiver_socket_id).emit('received_private_message', {
       content: data.content,

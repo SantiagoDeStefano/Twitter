@@ -42,7 +42,6 @@ export default function Chat() {
 
     socket.on('received_private_message', (data) => {
       const content = data.content
-      console.log(data.content)
       setMessage((messages) => [
         ...messages,
         {
@@ -66,6 +65,9 @@ export default function Chat() {
       content: value,
       to: {
         _id: receiver
+      },
+      from: {
+        _id: profile._id
       }
     })
     setMessage((messages) => [
