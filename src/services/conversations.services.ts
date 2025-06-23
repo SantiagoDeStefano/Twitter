@@ -1,9 +1,19 @@
-import { ObjectId } from "mongodb"
-import DatabaseService from "./database.services"
+import { ObjectId } from 'mongodb'
+import DatabaseService from './database.services'
 
 class ConversationService {
-  async getConversation({ sender_id, receiver_id }: { sender_id: string, receiver_id: string }) {
-    const conversations = await DatabaseService.conversations.find({
+  async getConversation({
+    sender_id,
+    receiver_id,
+    limit,
+    page
+  }: {
+    sender_id: string
+    receiver_id: string
+    limit: number
+    page: number
+  }) {
+    const match = {
       $or: [
         {
           sender_id: new ObjectId(sender_id),
@@ -14,10 +24,22 @@ class ConversationService {
           receiver_id: new ObjectId(sender_id)
         }
       ]
-    })
-    .toArray()
+    }
 
-    return conversations
+    const [conversations, total] = await Promise.all([
+      DatabaseService.conversations
+      .find(match)
+      .skip(limit * (page - 1))
+      .limit(limit)
+      .toArray(),
+
+      DatabaseService.conversations.countDocuments(match)
+    ])
+
+    return {
+      conversations,
+      total
+    }
   }
 }
 
