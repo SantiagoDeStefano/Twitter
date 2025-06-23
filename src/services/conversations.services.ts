@@ -28,10 +28,10 @@ class ConversationService {
 
     const [conversations, total] = await Promise.all([
       DatabaseService.conversations
-      .find(match)
-      .skip(limit * (page - 1))
-      .limit(limit)
-      .toArray(),
+        .find(match)
+        .skip(limit * (page - 1))
+        .limit(limit)
+        .toArray(),
 
       DatabaseService.conversations.countDocuments(match)
     ])
