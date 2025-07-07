@@ -27,9 +27,8 @@ export default function Chat() {
         baseURL: import.meta.env.VITE_API_URL
       })
       .then((res) => {
-        console.log(res)
         setReceiver(res.data.result._id)
-        // alert(`You are chatting with ${res.data.result.name}`)
+        alert(`You are chatting with ${res.data.result.email}`)
       })
   }
 
@@ -41,34 +40,32 @@ export default function Chat() {
     socket.connect()
 
     socket.on('received_private_message', (data) => {
-      const {payload} = data
-      setMessage((conversations) => [
-        ...conversations,
-        payload
-      ])
+      const { payload } = data
+      setMessage((conversations) => [...conversations, payload])
     })
 
     return () => {
       socket.disconnect()
     }
-  }, [])
+  }, [profile._id])
 
   useEffect(() => {
-    if(!receiver) {
+    if (!receiver) {
       return
     }
-    axios.get(`/conversations/receiver/${receiver}`, {
-      baseURL: import.meta.env.VITE_API_URL,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`
-      }
-    })
-    .then((res) => {
-      console.log(res)
-      setMessage(res.data.result.conversations)
-    })
+    axios
+      .get(`/conversations/receiver/${receiver}`, {
+        baseURL: import.meta.env.VITE_API_URL,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        }
+      })
+      .then((res) => {
+        console.log(res)
+        setMessage(res.data.result.conversations)
+      })
   }, [receiver])
-  
+
   const send = (e) => {
     e.preventDefault()
     setValue('')
@@ -84,11 +81,13 @@ export default function Chat() {
     setMessage((conversations) => [
       ...conversations,
       {
-        ...conversations,
+        content: value,
+        sender_id: profile._id,
+        receiver_id: receiver,
         _id: new Date().getTime()
       }
     ])
-   }
+  }
 
   return (
     <div>
@@ -104,7 +103,9 @@ export default function Chat() {
         {conversations.map((conversation) => (
           <div key={conversation._id}>
             <div className='conversation-container'>
-              <div className={conversation.sender_id == profile._id ? 'message-sent' : 'message-received'}>{conversation.content}</div>
+              <div className={conversation.sender_id == profile._id ? 'message-sent' : 'message-received'}>
+                {conversation.content}
+              </div>
             </div>
           </div>
         ))}
