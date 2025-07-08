@@ -1,4 +1,4 @@
-import { body, checkSchema, ParamSchema, Schema } from 'express-validator'
+import { body, check, checkSchema, ParamSchema, Schema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { hashPassword } from '~/utils/crypto'
@@ -500,6 +500,15 @@ export const followValidator = validate(
       followed_user_id: userIdSchema
     },
     ['body']
+  )
+)
+
+export const getConversationsValidator = validate(
+  checkSchema(
+    {
+      receiver_id: userIdSchema
+    },
+    ['params']
   )
 )
 
