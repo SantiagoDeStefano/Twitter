@@ -13,7 +13,6 @@ export const getConversationsController = async(
   const limit = Number(req.query.limit)
   const page = Number(req.query.page)
   const sender_id = req.decoded_authorization?.user_id as string
-  console.log(limit, page, sender_id)
   const result = await conversationService.getConversation({ sender_id, receiver_id, limit, page })
   res.json({
     message: CONVERSATIONS_MESSAGES.GET_CONVERSATIONS_SUCCESSFULLY,

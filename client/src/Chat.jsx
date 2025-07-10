@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import InfiniteScroll from 'react-infinite-scroll-component'
 import { io } from 'socket.io-client'
 
 const profile = JSON.parse(localStorage.getItem('profile'))
@@ -16,10 +17,17 @@ const usernames = [
   }
 ]
 
+const LIMIT = 10
+const PAGE = 1
+const TOTAL_PAGE = 0
 export default function Chat() {
   const [value, setValue] = useState('')
-  const [conversations, setMessage] = useState([])
+  const [conversations, setConversations] = useState([])
   const [receiver, setReceiver] = useState('')
+  const [pagination, setPagination] = useState({
+    page: PAGE,
+    total_page: TOTAL_PAGE
+  })
 
   const getProfile = (username) => {
     axios
@@ -41,13 +49,35 @@ export default function Chat() {
 
     socket.on('received_private_message', (data) => {
       const { payload } = data
-      setMessage((conversations) => [...conversations, payload])
+      setConversations((conversations) => [...conversations, payload])
     })
 
     return () => {
       socket.disconnect()
     }
   }, [profile._id])
+
+  const send = (e) => {
+    e.preventDefault()
+    setValue('')
+    const conversation = {
+      content: value,
+      sender_id: profile._id,
+      receiver_id: receiver
+    }
+    socket.emit('private_message', {
+      payload: conversation
+    })
+    setConversations((conversations) => [
+      {
+        content: value,
+        sender_id: profile._id,
+        receiver_id: receiver,
+        _id: new Date().getTime()
+      },
+      ...conversations
+    ])
+  }
 
   useEffect(() => {
     if (!receiver) {
@@ -58,35 +88,45 @@ export default function Chat() {
         baseURL: import.meta.env.VITE_API_URL,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        },
+        params: {
+          page: PAGE,
+          limit: LIMIT
         }
       })
       .then((res) => {
-        console.log(res)
-        setMessage(res.data.result.conversations)
+        const { conversations, page, total_page } = res.data.result
+        setConversations(conversations)
+        setPagination({
+          page,
+          total_page
+        })
       })
   }, [receiver])
 
-  const send = (e) => {
-    e.preventDefault()
-    setValue('')
-
-    const conversation = {
-      content: value,
-      sender_id: profile._id,
-      receiver_id: receiver
+  const fetchMoreConversations = () => {
+    if (!receiver || pagination.page > pagination.total_page) {
+      return
     }
-    socket.emit('private_message', {
-      payload: conversation
-    })
-    setMessage((conversations) => [
-      ...conversations,
-      {
-        content: value,
-        sender_id: profile._id,
-        receiver_id: receiver,
-        _id: new Date().getTime()
-      }
-    ])
+    axios
+      .get(`/conversations/receiver/${receiver}`, {
+        baseURL: import.meta.env.VITE_API_URL,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        },
+        params: {
+          page: pagination.page + 1,
+          limit: LIMIT
+        }
+      })
+      .then((res) => {
+        const { conversations, page, total_page } = res.data.result
+        setConversations((prev) => [...prev, ...conversations])
+        setPagination({
+          page,
+          total_page
+        })
+      })
   }
 
   return (
@@ -99,19 +139,43 @@ export default function Chat() {
           </div>
         ))}
       </div>
-      <div className='chat'>
-        {conversations.map((conversation) => (
-          <div key={conversation._id}>
-            <div className='conversation-container'>
-              <div className={conversation.sender_id == profile._id ? 'message-sent' : 'message-received'}>
-                {conversation.content}
+
+      <div
+        id='scrollableDiv'
+        style={{
+          height: 300,
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column-reverse'
+        }}
+      >
+        {/*Put the scroll bar always on the bottom*/}
+        <InfiniteScroll
+          dataLength={conversations.length}
+          next={fetchMoreConversations}
+          style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
+          inverse={true} //
+          hasMore={pagination.page <= pagination.total_page  }
+          loader={<h4>Loading...</h4>}
+          scrollableTarget='scrollableDiv'
+        >
+          {conversations.map((conversation) => (
+            <div key={conversation._id}>
+              <div className='message-container'>
+                <div className={conversation.sender_id == profile._id ? 'message-sent' : 'message-received'}>
+                  {conversation.content}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </InfiniteScroll>
       </div>
+
       <form onSubmit={send}>
-        <input type='text' onChange={(e) => setValue(e.target.value)} value={value} />
+        <input 
+        type='text' onChange={(e) => setValue(e.target.value)} 
+        value={value} 
+        />
         <button type='submit'>Send</button>
       </form>
     </div>

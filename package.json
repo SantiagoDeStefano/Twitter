@@ -49,6 +49,7 @@
     "minimist": "^1.2.8",
     "mongodb": "^6.14.0",
     "nanoid": "^5.1.5",
+    "react-infinite-scroll-component": "^6.1.0",
     "sharp": "^0.34.1",
     "slash": "^5.1.0",
     "socket.io": "^4.8.1",

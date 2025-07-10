@@ -83,6 +83,7 @@ io.on('connection', (socket) => {
   socket.on('private_message', async (data) => {
     const { receiver_id, sender_id, content } = data.payload
     const receiver_socket_id = users[receiver_id]?.socket_id
+
     if (!receiver_socket_id) {
       return
     }
@@ -92,6 +93,7 @@ io.on('connection', (socket) => {
       receiver_id: new ObjectId(receiver_id),
       content: content
     })
+
     const result = await DatabaseService.conversations.insertOne(conversation)
     conversation._id = result.insertedId
 
