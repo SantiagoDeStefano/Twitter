@@ -18,6 +18,16 @@ import { Server } from 'socket.io'
 import { ObjectId } from 'mongodb'
 import Conversation from './models/schemas/Conversations.schema'
 import conversationsRouter from './routes/conversations.routes'
+import ErrorWithStatus from './models/Errors'
+import { USERS_MESSAGES } from './constants/messages'
+import HTTP_STATUS from './constants/httpStatus'
+import { verifyToken } from './utils/jwt'
+import { capitalize } from 'lodash'
+import { JsonWebTokenError } from 'jsonwebtoken'
+import { verifyAccessToken } from './utils/commons'
+import { TokenPayload } from './models/requests/users.requests'
+import { VerificationStatus } from '@aws-sdk/client-ses'
+import { UserVerifyStatus } from './constants/enums'
 // import '~/utils/s3'
 // import '~/utils/fake'
 
@@ -74,6 +84,32 @@ const users: {
   }
 } = {}
 
+// Authorization middlewares
+// Must be logged in and verified
+io.use(async (socket, next) => {
+  const { Authorization } = socket.handshake.auth
+  const access_token = Authorization?.split(' ')[1] 
+  try {
+    const decoded_authorization = await verifyAccessToken(access_token)
+    const { verify } = decoded_authorization as TokenPayload
+    if (verify != UserVerifyStatus.Verified) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.USER_NOT_VERIFIED,
+        status: HTTP_STATUS.FORBIDDEN
+      })
+    }
+    // Pass decoded_authorization to socket for other middlewares
+    socket.handshake.auth.decoded_authorization = decoded_authorization
+    next()
+  } catch (error) {
+    next({
+      message: 'Unauthorized',
+      name: 'UnauthorziedError',
+      data: error
+    })
+  }
+})
+
 io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected`)
   const user_id = socket.handshake.auth._id
@@ -84,19 +120,17 @@ io.on('connection', (socket) => {
     const { receiver_id, sender_id, content } = data.payload
     const receiver_socket_id = users[receiver_id]?.socket_id
 
-    if (!receiver_socket_id) {
-      return
-    }
-
     const conversation = new Conversation({
       sender_id: new ObjectId(sender_id),
       receiver_id: new ObjectId(receiver_id),
       content: content
     })
-
     const result = await DatabaseService.conversations.insertOne(conversation)
     conversation._id = result.insertedId
 
+    if (!receiver_socket_id) {
+      return
+    }
     socket.to(receiver_socket_id).emit('received_private_message', {
       payload: conversation
     })

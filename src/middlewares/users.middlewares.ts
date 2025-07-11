@@ -15,6 +15,7 @@ import ErrorWithStatus from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import userService from '~/services/users.services'
 import DatabaseService from '~/services/database.services'
+import { verifyAccessToken } from '~/utils/commons'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -247,25 +248,7 @@ export const accessTokenValidator = validate(
         custom: {
           options: async (value: string, { req }) => {
             const access_token = (value || '').split(' ')[1]
-            if (!access_token) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.ACCESS_TOKEN_REQUIRED,
-                status: HTTP_STATUS.UNAUTHORIZED
-              })
-            }
-            try {
-              const decoded_authorization = await verifyToken({
-                token: access_token,
-                secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
-              })
-              req.decoded_authorization = decoded_authorization
-            } catch (error) {
-              throw new ErrorWithStatus({
-                message: capitalize((error as JsonWebTokenError).message),
-                status: HTTP_STATUS.UNAUTHORIZED
-              })
-            }
-            return true
+            return await verifyAccessToken(access_token, req as Request)
           }
         }
       }

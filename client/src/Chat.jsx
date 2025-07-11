@@ -42,7 +42,7 @@ export default function Chat() {
 
   useEffect(() => {
     socket.auth = {
-      _id: profile._id
+      Authorization: `Bearer ${localStorage.getItem('access_token')}`
     }
 
     socket.connect()
