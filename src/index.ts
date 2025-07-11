@@ -88,7 +88,7 @@ const users: {
 // Must be logged in and verified
 io.use(async (socket, next) => {
   const { Authorization } = socket.handshake.auth
-  const access_token = Authorization?.split(' ')[1] 
+  const access_token = Authorization?.split(' ')[1]
   try {
     const decoded_authorization = await verifyAccessToken(access_token)
     const { verify } = decoded_authorization as TokenPayload

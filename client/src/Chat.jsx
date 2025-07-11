@@ -1,10 +1,9 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { io } from 'socket.io-client'
+import socket from './socket'
 
 const profile = JSON.parse(localStorage.getItem('profile'))
-const socket = io(import.meta.env.VITE_API_URL)
 
 const usernames = [
   {
@@ -41,12 +40,6 @@ export default function Chat() {
   }
 
   useEffect(() => {
-    socket.auth = {
-      Authorization: `Bearer ${localStorage.getItem('access_token')}`
-    }
-
-    socket.connect()
-
     socket.on('received_private_message', (data) => {
       const { payload } = data
       setConversations((conversations) => [...conversations, payload])
@@ -155,7 +148,7 @@ export default function Chat() {
           next={fetchMoreConversations}
           style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
           inverse={true} //
-          hasMore={pagination.page <= pagination.total_page  }
+          hasMore={pagination.page <= pagination.total_page}
           loader={<h4>Loading...</h4>}
           scrollableTarget='scrollableDiv'
         >
@@ -172,10 +165,7 @@ export default function Chat() {
       </div>
 
       <form onSubmit={send}>
-        <input 
-        type='text' onChange={(e) => setValue(e.target.value)} 
-        value={value} 
-        />
+        <input type='text' onChange={(e) => setValue(e.target.value)} value={value} />
         <button type='submit'>Send</button>
       </form>
     </div>
