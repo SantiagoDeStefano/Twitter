@@ -2,32 +2,28 @@ import { defaultErrorHandler } from './middlewares/error.middlewares'
 import { initFolder } from './utils/file'
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
 import { config } from 'dotenv'
+import { ObjectId } from 'mongodb'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
+import { USERS_MESSAGES } from './constants/messages'
+import { verifyAccessToken } from './utils/commons'
+import { TokenPayload } from './models/requests/users.requests'
+import { UserVerifyStatus } from './constants/enums'
 
 import express from 'express'
 import usersRouter from './routes/users.routes'
 import DatabaseService from './services/database.services'
 import mediasRouter from './routes/medias.routes'
+import Conversation from './models/schemas/Conversations.schema'
+import conversationsRouter from './routes/conversations.routes'
+import ErrorWithStatus from './models/Errors'
+import HTTP_STATUS from './constants/httpStatus'
 import staticRouter from './routes/static.routes'
 import cors from 'cors'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likeRoutes from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
-import { createServer } from 'http'
-import { Server } from 'socket.io'
-import { ObjectId } from 'mongodb'
-import Conversation from './models/schemas/Conversations.schema'
-import conversationsRouter from './routes/conversations.routes'
-import ErrorWithStatus from './models/Errors'
-import { USERS_MESSAGES } from './constants/messages'
-import HTTP_STATUS from './constants/httpStatus'
-import { verifyToken } from './utils/jwt'
-import { capitalize } from 'lodash'
-import { JsonWebTokenError } from 'jsonwebtoken'
-import { verifyAccessToken } from './utils/commons'
-import { TokenPayload } from './models/requests/users.requests'
-import { VerificationStatus } from '@aws-sdk/client-ses'
-import { UserVerifyStatus } from './constants/enums'
 // import '~/utils/s3'
 // import '~/utils/fake'
 
@@ -97,9 +93,13 @@ io.use(async (socket, next) => {
         message: USERS_MESSAGES.USER_NOT_VERIFIED,
         status: HTTP_STATUS.FORBIDDEN
       })
+      // const err = new Error('User not verified')
+      // ;(err as any).data = { reason: USERS_MESSAGES.USER_NOT_VERIFIED }
+      // return next(err)
     }
     // Pass decoded_authorization to socket for other middlewares
     socket.handshake.auth.decoded_authorization = decoded_authorization
+    socket.handshake.auth.access_token = access_token
     next()
   } catch (error) {
     next({
@@ -116,6 +116,17 @@ io.on('connection', (socket) => {
   users[user_id] = {
     socket_id: socket.id
   }
+
+  socket.use(async (packet, next) => {
+    const { access_token } = socket.handshake.auth
+    try {
+      await verifyAccessToken(access_token)
+      next()
+    } catch (error) {
+      next(new Error('Unauthorized'))
+    }
+  })
+
   socket.on('private_message', async (data) => {
     const { receiver_id, sender_id, content } = data.payload
     const receiver_socket_id = users[receiver_id]?.socket_id
