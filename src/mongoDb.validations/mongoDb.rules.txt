@@ -1,2 +1,0 @@
-ValidationAction = 'Error'
-ValidationLevel = 'Strict'
