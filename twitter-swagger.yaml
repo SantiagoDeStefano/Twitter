@@ -26,6 +26,10 @@ servers:
 tags:
   - name: users
     description: Everything about your Users
+  - name: medias
+    description: Everything about your Medias
+  - name: serves
+    description: Serve static files images and videos
 paths:
   /users/login:
     post:
@@ -186,96 +190,6 @@ paths:
                   message:
                     type: string
                     example: 'Used refresh token or does not exist'
-  /users/me:
-    get:
-      tags:
-        - users
-      summary: Get current user information
-      operationId: getCurrentUser
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Current user information retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
-                    example: 'Get my profile success'
-                  result:
-                    type: object
-                    properties:
-                      _id:
-                        type: string
-                        format: MongoDB ObjectId
-                        example: '684ce37d83642ce3fe2c1eb3'
-                      name:
-                        type: string
-                        example: 'Pham Lam Ha Vu'
-                      email:
-                        type: string
-                        example: 'ngpham82@gmail.com'
-                      date_of_birth:
-                        type: string
-                        format: ISO8601
-                        example: '2020-06-06T08:26:33.781Z'
-                      created_at:
-                        type: string
-                        format: ISO8601
-                        example: '2025-06-14T02:50:37.452Z'
-                      updated_at:
-                        type: string
-                        format: ISO8601
-                        example: '2025-06-14T13:36:00.963Z'
-                      forgot_password_token:
-                        type: string
-                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0Y2UzN2Q4MzY0MmNlM2ZlMmMxZWIzIiwidG9rZW5fdHlwZSI6MiwidmVyaWZ5IjowLCJpYXQiOjE3NDk4NzI4MjIsImV4cCI6MTc0OTk1OTIyMn0.SJeHCEqSNH12Ph1xYE7a1Q9zKyw-mWalw4v-4RdNIv4'
-                      verify:
-                        type: integer
-                        example: Verified
-                        enum:
-                          - Unverified
-                          - Verified
-                          - Banned
-                      twitter_circle:
-                        type: array
-                        items:
-                          type: string
-                        example: ['john_doe', 'jane_doe']
-                      bio:
-                        type: string
-                        example: 'This is my bio'
-                      location:
-                        type: string
-                        example: ''
-                      website:
-                        type: string
-                        example: ''
-                      username:
-                        type: string
-                        example: 'user684ce37d83642ce3fe2c1eb3'
-                      avatar:
-                        type: string
-                        example: ''
-                      cover_photo:
-                        type: string
-                        example: ''
-                required:
-                  - msg
-                  - result
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'Access token is required'
   /users/logout:
     post:
       tags:
@@ -494,6 +408,787 @@ paths:
                   message:
                     type: string
                     example: 'Jwt expired'
+  /users/reset-password:
+    post:
+      tags:
+        - users
+      summary: Reset user password
+      operationId: resetPassword
+      requestBody:
+        description: The new password and confirmation
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0NmE5MjJjOGQ2YzYwYzI5ZWM5MmQzIiwidG9rZW5fdHlwZSI6MiwidmVyaWZ5IjoxLCJpYXQiOjE3NTMzMzIzMjEsImV4cCI6MTc1MzQxODcyMX0.C_nF9pAdRvQzdQvDn2k_hxGxuElq_qohwgVVOtQmhw4'
+                password:
+                  type: string
+                  example: 'NewPassword123!'
+                confirm_password:
+                  type: string
+                  example: 'NewPassword123!'
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Reset password successfully'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid forgot password token'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Validation error'
+                  errors:
+                    type: object
+                    properties:
+                      confirm_password:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: 'field'
+                          value:
+                            type: string
+                            example: 'NewPassword123!'
+                          msg:
+                            type: string
+                            example: 'Password confirmation does not match password'
+                          path:
+                            type: string
+                            example: 'confirm_password'
+                          location:
+                            type: string
+                            example: 'body'
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: Get current user information
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current user information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: 'Get my profile success'
+                  result:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+    patch:
+      tags:
+        - users
+      summary: Update current user information
+      operationId: updateCurrentUser
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The user information to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'Updated name'                
+                bio:
+                  type: string
+                  example: 'Updated bio'                
+      responses:
+        '200':
+          description: User information updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: 'Update profile success'
+                  result:
+                    $ref: '#/components/schemas/User'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Validation error'
+                  errors:
+                    type: object
+                    properties:
+                      bio:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: 'field'
+                          value:
+                            type: string
+                            example: ''
+                          msg:
+                            type: string
+                            example: 'Bio must be between 1 and 160 characters'
+                          path:
+                            type: string
+                            example: 'bio'
+                          location:
+                            type: string
+                            example: 'body'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User not verified'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+  /users/{user_id}:
+    get:
+      tags:
+        - users
+      summary: Get user information by user ID
+      operationId: getUserById
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'user67ef503ba7f350002d994cdb'
+      responses:
+        '200':
+          description: Get profile successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get profile successfully
+                  result:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 67ef503ba7f350002d994cdb
+                      name:
+                        type: string
+                        example: Phuong
+                      email:
+                        type: string
+                        example: ngpham35@gmail.com
+                      date_of_birth:
+                        type: string
+                        format: date-time
+                        example: '2020-06-06T08:26:33.781Z'
+                      bio:
+                        type: string
+                        example: ""
+                      location:
+                        type: string
+                        example: ""
+                      website:
+                        type: string
+                        example: ""
+                      username:
+                        type: string
+                        example: user67ef503ba7f350002d994cdb
+                      avatar:
+                        type: string
+                        example: ""
+                      cover_photo:
+                        type: string
+                        example: ""
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User not found'
+  /users/follow:
+    post:
+      tags:
+        - users
+      summary: Follow a user
+      operationId: followUser
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The user ID to follow
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  format: MongoDB ObjectId
+                  example: '67ef503ba7f350002d994cdb'
+      responses:
+        '200':
+          description: Follow successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Follow successfully'
+              examples:
+                followSuccess:
+                  summary: Successful follow
+                  value:
+                      result:
+                        message: 'Follow successfully'
+                alreadyFollowing:
+                  summary: Already following
+                  value:
+                    result:
+                      message: 'Already followed'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid user ID'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+  /users/follow/{user_id}:
+    delete:
+      tags:
+        - users
+      summary: Unfollow a user
+      operationId: unfollowUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: MongoDB ObjectId
+            example: '6825b42db002e112f232301c'
+      responses:
+        '200':
+          description: Unfollow successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Unfollow successfully'
+              examples:
+                unfollowSuccess:
+                  summary: Successful unfollow
+                  value:
+                    result:
+                      message: 'Unfollow successfully'
+                notFollowing:
+                  summary: Not following the user
+                  value:
+                    result:
+                      message: 'Already unfollowed or not following'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User not verified'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid user ID'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+  /users/change-password:
+    put:
+      tags:
+        - users
+      summary: Change user password
+      operationId: changePassword
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The current password and new password
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_password:
+                  type: string
+                  example: 'CurrentPassword123!'
+                new_password:
+                  type: string
+                  example: 'NewPassword123!'
+                confirm_new_password:
+                  type: string
+                  example: 'NewPassword123!'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Change password successfully'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Validation error
+                  errors:
+                    type: object
+                    properties:
+                      confirm_new_password:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: field
+                          value:
+                            type: string
+                            example: Phuong2872@@!
+                          msg:
+                            type: string
+                            example: Password confirmation does not match password
+                          path:
+                            type: string
+                            example: confirm_new_password
+                          location:
+                            type: string
+                            example: body
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Old password does not match'
+              examples:
+                oldPasswordMismatch:
+                  summary: Old password mismatch
+                  value:
+                    message: 'Old password does not match'
+                accessTokenRequired:
+                  summary: Access token required
+                  value:
+                    message: 'Access token is required'
+  
+  /medias/upload-image:
+    post:
+      tags:
+        - medias
+      summary: Upload an image to S3
+      operationId: uploadImage
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The image file to upload
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Image uploaded successfully
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                          example: https://twitter-backend-ap-southeast-1.s3.ap-southeast-1.amazonaws.com/images/07594fb83ebdb5713d9443800.jpg
+                        type:
+                          allOf:
+                            - $ref: '#/components/schemas/MediaType'
+                          example: 0
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+  /medias/upload-video:
+    post:
+      tags:
+        - medias
+      summary: Upload a video to S3
+      operationId: uploadVideo
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The video file to upload
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Video uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Video uploaded successfully
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                          example: https://twitter-backend-ap-southeast-1.s3.ap-southeast-1.amazonaws.com/videos/3KIG7c4HhgPFDnBP71JME.mp4
+                        type:
+                          allOf:
+                            - $ref: '#/components/schemas/MediaType'
+                          example: 1
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+  /medias/upload-video-hls:
+    post:
+      tags:
+        - medias
+      summary: Upload a video for HLS streaming to S3
+      operationId: uploadVideoHLS
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The video file to upload for HLS streaming
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Video uploaded successfully for HLS streaming
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Video uploaded successfully for HLS streaming
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                          example: http://localhost:4000/static/video-hls/W70kbVFMWz6DdZ2LkB_1w/master.m3u8
+                        type:
+                          allOf:
+                            - $ref: '#/components/schemas/MediaType'
+                          example: 2
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+  /medias/video-status/{video_id}:
+    get:
+      tags:
+        - medias
+      summary: Get video status by video ID
+      operationId: getVideoStatus
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: video_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: MongoDB ObjectId
+            example: '684ce37d83642ce3fe2c1eb3'
+      responses:
+        '200':
+          description: Video status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Get video status successfully'
+                  video_status:
+                    allOf:
+                      - $ref: '#/components/schemas/EncodingStatus'
+                    example: 2
+        '404':
+          description: Video not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Video not found'
+              examples:
+                videoNotFound:
+                  summary: Video not found
+                  value:
+                    message: 'Video not found'
+                videoIdInvalid:
+                  summary: Invalid video ID
+                  value:
+                    message: 'Invalid video ID'
+
+  /static/image/{image_name}:
+    get:
+      tags:
+        - serves
+      summary: Serve image file
+      operationId: getImageFile
+      parameters:
+        - name: image_name
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '07594fb83ebdb5713d9443800.jpg'
+      responses:
+        '204':
+          description: No Content
+  /static/video-stream/{video_name}:
+    get:
+      tags:
+        - serves
+      summary: Serve video stream
+      operationId: getVideoStream
+      parameters:
+        - name: video_name
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '3KIG7c4HhgPFDnBP71JME.mp4'
+      responses:
+        '204':
+          description: No Content
+  /static/video-hls/{video_name}/master.m3u8:
+    get:
+      tags:
+        - serves
+      summary: Serve HLS video stream
+      operationId: getHLSVideoStream
+      parameters:
+        - name: video_name
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'W70kbVFMWz6DdZ2LkB_1w'
+      responses:
+        '200':
+          description: HLS video stream retrieved successfully
+          content:
+            application/vnd.apple.mpegurl:
+              schema:
+                type: string
+                example: '#EXTM3U
+                          #EXT-X-VERSION:3
+                          #EXT-X-STREAM-INF:BANDWIDTH=940957,AVERAGE-BANDWIDTH=878196,RESOLUTION=1280x720,CODECS="avc1.640032,mp4a.40.2"
+                          v0/prog_index.m3u8'
+  /static/video-hls/{id}/{v}/{segment}:
+    get:
+      tags:
+        - serves
+      summary: Serve HLS video segment
+      operationId: getHLSVideoSegment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'W70kbVFMWz6DdZ2LkB_1w'
+        - name: v
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '0'
+        - name: segment
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'segment0.ts'
+      responses:
+        '204':
+          description: No Content 
+
+  
 components:
   schemas:
     LoginBody:
@@ -571,7 +1266,9 @@ components:
               type: string
               example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0Y2UzN2Q4MzY0MmNlM2ZlMmMxZWIzIiwidG9rZW5fdHlwZSI6MiwidmVyaWZ5IjowLCJpYXQiOjE3NDk4NzI4MjIsImV4cCI6MTc0OTk1OTIyMn0.SJeHCEqSNH12Ph1xYE7a1Q9zKyw-mWalw4v-4RdNIv4'
             verify:
-              $ref: '#/components/schemas/UserVerifyStatus'
+              allOf:
+                - $ref: '#/components/schemas/UserVerifyStatus'
+              example: 1
             twitter_circle:
               type: array
               items:
@@ -597,9 +1294,30 @@ components:
               type: string
               example: 'http://localhost:4000/PLHV_cover_photo.jpg'
     UserVerifyStatus:
-      type: number
-      enum: [Unverified, Verified, Banned]
-      example: 1
+      type: integer
+      description: |
+        User verification status:
+        - 0 = Unverified
+        - 1 = Verified
+        - 2 = Banned
+      enum: [0, 1, 2]
+    MediaType:
+      type: integer
+      description: |
+        Media type:
+        - 0 = Image
+        - 1 = Video
+        - 2 = HLS
+      enum: [0, 1, 2]
+    EncodingStatus:
+      type: integer
+      description: |
+        Video encoding status:
+        - 0 = Pending
+        - 1 = Processing
+        - 2 = Successfully
+        - 3 = Failed
+      enum: [0, 1, 2, 3]
   securitySchemes:
     BearerAuth:
       type: http

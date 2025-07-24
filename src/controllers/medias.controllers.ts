@@ -121,6 +121,6 @@ export const videoStatusController = async (req: Request, res: Response, next: N
   const result = await mediasService.getVideoStatus(id as string)
   res.json({
     message: MEDIAS_MESSAGES.GET_VIDEO_STATUS_SUCCESS,
-    result: result
+    video_status: result
   })
 }

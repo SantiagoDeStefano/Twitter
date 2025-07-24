@@ -14,6 +14,7 @@ import VideoStatus from '~/models/schemas/VideoStatus.schema'
 import { uploadFileToS3 } from '~/utils/s3'
 import mime from 'mime'
 import fsPromise from 'fs/promises'
+import { ObjectId } from 'mongodb'
 
 config()
 
@@ -213,9 +214,9 @@ class MediasService {
 
   async getVideoStatus(id: string) {
     const data = await DatabaseService.videoStatus.findOne({
-      name: id
+      _id: new ObjectId(id)
     })
-    return data
+    return data?.status
   }
 }
 

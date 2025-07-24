@@ -1,4 +1,4 @@
-import { body, check, checkSchema, ParamSchema, Schema } from 'express-validator'
+import { checkSchema, ParamSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { hashPassword } from '~/utils/crypto'

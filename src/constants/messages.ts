@@ -1,7 +1,7 @@
 export const USERS_MESSAGES = {
   ACCESS_TOKEN_REQUIRED: 'Access token is required',
   ALREADY_FOLLOWED: 'Already followed',
-  ALREADY_UNFOLLOWED: 'Already unfollowed',
+  ALREADY_UNFOLLOWED: 'Already unfollowed or not following',
 
   BIO_MUST_BE_A_STRING: 'Bio must be a string',
   BIO_LENGTH_MUST_BE_BETWEEN_1_AND_100: 'Bio must be between 1 and 100',
@@ -27,10 +27,10 @@ export const USERS_MESSAGES = {
   EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
 
   FORGOT_PASSWORD_TOKEN_REQUIRED: 'Forgot password token is required',
-  FOLLOW_SUCCESS: 'Follow success',
+  FOLLOW_SUCCESS: 'Follow successfully',
 
-  GET_ME_SUCCESS: 'Get my profile success',
-  GET_PROFILE_SUCCESS: 'Get profile success',
+  GET_ME_SUCCESS: 'Get my profile successfully',
+  GET_PROFILE_SUCCESS: 'Get profile successfully',
   GMAIL_NOT_VERIFIED: 'Email is not verified',
 
   INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
@@ -56,9 +56,9 @@ export const USERS_MESSAGES = {
   PASSWORD_MUST_BE_STRONG: 'Password must be strong',
 
   REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid',
-  REGISTER_SUCCESS: 'Register success',
-  RESEND_VERIFY_EMAIL_SUCCESS: 'Resend verify email success',
-  RESET_PASSWORD_SUCCESS: 'Reset password success',
+  REGISTER_SUCCESS: 'Register successfully',
+  RESEND_VERIFY_EMAIL_SUCCESS: 'Resend verify email successfully',
+  RESET_PASSWORD_SUCCESS: 'Reset password successfully',
   REFRESH_TOKEN_SUCCESS: 'New tokens returned successfully',
 
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or does not exist',
@@ -66,23 +66,28 @@ export const USERS_MESSAGES = {
   USER_NOT_VERIFIED: 'User not verified',
   USERNAME_MUST_BE_A_STRING: 'Username must be a string',
   USERNAME_MUST_BE_BETWEEN_1_AND_50: 'Username must be between 1 and 50',
-  UPDATE_ME_SUCCESS: 'Update me success',
-  UNFOLLOW_SUCCESS: 'Unfollowed success',
+  UPDATE_ME_SUCCESS: 'Update me successfully',
+  UNFOLLOW_SUCCESS: 'Unfollowed successfully',
   USERNAME_ALREADY_EXISTS: 'Username already exists',
 
   VALIDATION_ERROR: 'Validation error',
-  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success',
+  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password successfully',
 
   WEBSITE_MUST_BE_A_STRING: 'Website must be a string',
   WEBSITE_LENGTH_MUST_BE_BETWEEN_1_AND_200: 'Website must be between 1 and 200',
 
-  STRONG_PASSWORD:
-    'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character'
+  STRONG_PASSWORD: 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character'
 } as const
 
 export const MEDIAS_MESSAGES = {
+  IMAGE_IS_REQUIRED :'Image is required',
   IMAGE_UPLOAD_SUCCESS: 'Image uploaded successfully',
+  INVALID_VIDEO_ID: 'Invalid video ID',
+
+  VIDEO_IS_REQUIRED: 'Video is required',
   VIDEO_UPLOAD_SUCCESS: 'Video uploaded successfully',
+  VIDEO_ID_NOT_FOUND: 'Video ID not found',
+  
   GET_VIDEO_STATUS_SUCCESS: 'Get video status successfully'
 } as const
 
@@ -128,8 +133,8 @@ export const LIKES_MESSAGES = {
 export const SEARCH_MESSAGES = {
   PEOPLE_FOLLOW_MUST_BE_TRUE_OR_FALSE: 'Option to show tweet of followed people must be true or false',
 
-  SEARCHED_SUCCESSFULLY: 'Seached successfully',
-  SEARCH_CONTENT_MUST_BE_STRING: 'Searchs content must be a string'
+  SEARCHED_SUCCESSFULLY: 'Searched successfully',
+  SEARCH_CONTENT_MUST_BE_STRING: 'Search content must be a string'
 } as const
 
 export const CONVERSATIONS_MESSAGES = {

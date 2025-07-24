@@ -1,21 +1,26 @@
 import { Router } from 'express'
-import { wrap } from 'lodash'
-import { uploadImageController, uploadVideoController, uploadVideoHLSController, videoStatusController } from '~/controllers/medias.controllers'
+import {
+  uploadImageController,
+  uploadVideoController,
+  uploadVideoHLSController,
+  videoStatusController
+} from '~/controllers/medias.controllers'
+import { videoIdValidator } from '~/middlewares/medias.middlewares'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 const mediasRouter = Router()
 
 mediasRouter.post(
-  '/upload-image', 
-  accessTokenValidator, 
-  verifiedUserValidator, 
+  '/upload-image',
+  accessTokenValidator,
+  verifiedUserValidator,
   wrapRequestHandler(uploadImageController)
 )
 
 mediasRouter.post(
-  '/upload-video', 
+  '/upload-video',
   accessTokenValidator, 
-  verifiedUserValidator, 
+  verifiedUserValidator,
   wrapRequestHandler(uploadVideoController)
 )
 
@@ -30,6 +35,7 @@ mediasRouter.get(
   '/video-status/:id',
   accessTokenValidator,
   verifiedUserValidator,
+  videoIdValidator,
   wrapRequestHandler(videoStatusController)
 )
 
