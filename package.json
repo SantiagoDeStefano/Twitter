@@ -36,6 +36,8 @@
     "@aws-sdk/lib-storage": "^3.828.0",
     "@faker-js/faker": "^9.8.0",
     "@types/minimist": "^1.2.5",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/yamljs": "^0.2.34",
     "axios": "^1.8.4",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -53,6 +55,8 @@
     "sharp": "^0.34.1",
     "slash": "^5.1.0",
     "socket.io": "^4.8.1",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0",
     "zx": "^8.5.3"
   },
   "optionalDependencies": {

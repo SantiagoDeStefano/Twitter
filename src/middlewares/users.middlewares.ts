@@ -141,7 +141,7 @@ const dateOfBirthSchema: ParamSchema = {
     errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_REQUIRED
   },
   isISO8601: {
-    errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_REQUIRED
+    errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_NOT_VALID
   }
 }
 

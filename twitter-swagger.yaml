@@ -1,0 +1,612 @@
+openapi: 3.0.4
+info:
+  title: Twitter clone TypeScript - 2025
+  description: |-
+    This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
+    Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
+    You can now help us improve the API whether it's by making changes to the definition itself or to the code.
+    That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
+
+    Some useful links:
+    - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
+    - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
+  termsOfService: https://swagger.io/terms/
+  contact:
+    email: ngpham.2807@gmail.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.12
+externalDocs:
+  description: Find out more about Swagger
+  url: https://swagger.io
+servers:
+  - url: http://localhost:4000
+    description: Local server
+tags:
+  - name: users
+    description: Everything about your Users
+paths:
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Logs user into the system
+      operationId: loginUser
+      requestBody:
+        description: The user login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+      responses:
+        '200':
+          description: Login successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login successfully
+                  data:
+                    $ref: '#/components/schemas/AuthenticateSuccessfully'
+
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Validation error'
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: 'field'
+                          value:
+                            type: string
+                            example: 'Non-existent-Email@gmail.com'
+                          msg:
+                            type: string
+                            example: 'Email or password is incorrect'
+                          path:
+                            type: string
+                            example: 'email'
+                          location:
+                            type: string
+                            example: 'body'
+      security: []
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Registers a new user
+      operationId: registerUser
+      requestBody:
+        description: The user registration credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterBody'
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully
+                  result:
+                    $ref: '#/components/schemas/AuthenticateSuccessfully'
+                    email_verify_token:
+                      type: string
+                      example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg3ZjU3M2ZiNzM1MGI5YWNmNzEwMzliIiwidG9rZW5fdHlwZSI6MywidmVyaWZ5IjowLCJpYXQiOjE3NTMxNzU4NzEsImV4cCI6MTc1Mzc4MDY3MX0.tiVewOpNKkFJejjBqg8MikYhLL_GvgRskBIYTVqG0Eg'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Validation error'
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: 'field'
+                          value:
+                            type: string
+                            example: 'ngpham82@gmail.com'
+                          msg:
+                            type: string
+                            example: 'Email already exists'
+                          path:
+                            type: string
+                            example: 'email'
+                          location:
+                            type: string
+                            example: 'body'
+  /users/refresh-token:
+    post:
+      tags:
+        - users
+      summary: Refreshes the access token
+      operationId: refreshToken
+      requestBody:
+        description: The refresh token to be used for generating a new access token
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0NmE5MjJjOGQ2YzYwYzI5ZWM5MmQzIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE3NTI1ODk5MzYsImV4cCI6MTc2MTIyOTkzNn0.C4W_Me1Di-owhrpj1VJ6j-ImoPtWMy6QMPT6R-uJ4a8'
+      responses:
+        '200':
+          description: Get new access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: New tokens returned successfully
+                  result:
+                    $ref: '#/components/schemas/AuthenticateSuccessfully'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Used refresh token or does not exist'
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: Get current user information
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current user information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: 'Get my profile success'
+                  result:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        format: MongoDB ObjectId
+                        example: '684ce37d83642ce3fe2c1eb3'
+                      name:
+                        type: string
+                        example: 'Pham Lam Ha Vu'
+                      email:
+                        type: string
+                        example: 'ngpham82@gmail.com'
+                      date_of_birth:
+                        type: string
+                        format: ISO8601
+                        example: '2020-06-06T08:26:33.781Z'
+                      created_at:
+                        type: string
+                        format: ISO8601
+                        example: '2025-06-14T02:50:37.452Z'
+                      updated_at:
+                        type: string
+                        format: ISO8601
+                        example: '2025-06-14T13:36:00.963Z'
+                      forgot_password_token:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0Y2UzN2Q4MzY0MmNlM2ZlMmMxZWIzIiwidG9rZW5fdHlwZSI6MiwidmVyaWZ5IjowLCJpYXQiOjE3NDk4NzI4MjIsImV4cCI6MTc0OTk1OTIyMn0.SJeHCEqSNH12Ph1xYE7a1Q9zKyw-mWalw4v-4RdNIv4'
+                      verify:
+                        type: integer
+                        example: Verified
+                        enum:
+                          - Unverified
+                          - Verified
+                          - Banned
+                      twitter_circle:
+                        type: array
+                        items:
+                          type: string
+                        example: ['john_doe', 'jane_doe']
+                      bio:
+                        type: string
+                        example: 'This is my bio'
+                      location:
+                        type: string
+                        example: ''
+                      website:
+                        type: string
+                        example: ''
+                      username:
+                        type: string
+                        example: 'user684ce37d83642ce3fe2c1eb3'
+                      avatar:
+                        type: string
+                        example: ''
+                      cover_photo:
+                        type: string
+                        example: ''
+                required:
+                  - msg
+                  - result
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+  /users/logout:
+    post:
+      tags:
+        - users
+      summary: Logs out the current user
+      operationId: logoutUser
+      requestBody:
+        description: The logout request does not require a body
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0Y2UzN2Q4MzY0MmNlM2ZlMmMxZWIzIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE3NTMyODUwNDQsImV4cCI6MTc1NDU4MTA0NH0.8iQbK7lvM7_KqypTvRYFsiDTAx2UTtpxJG79p777XU4'
+              required:
+                - refresh_token
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Logout successfully'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Used refresh token or does not exist'
+  /users/verify-email:
+    post:
+      tags:
+        - users
+      summary: Verify user email
+      operationId: verifyEmail
+      requestBody:
+        description: The email verification token
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email_verify_token:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg4MTAyYjcwN2RlYjI1MWE4MzAxYjY0IiwidG9rZW5fdHlwZSI6MywidmVyaWZ5IjowLCJpYXQiOjE3NTMyODUzMDMsImV4cCI6MTc1Mzg5MDEwM30.-LafPF4V9FDHU6Ondluf5C8Gc3yh8O9pQTEn9HXanmE'
+      responses:
+        '200':
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Email verified successfully'
+                  result:
+                    $ref: '#/components/schemas/AuthenticateSuccessfully'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Email verify token is required'
+  /users/resend-verify-email:
+    post:
+      tags:
+        - users
+      summary: Request email verification
+      operationId: resendEmailVerify
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Email verification sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Resend verify email success'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+  /users/forgot-password:
+    post:
+      tags:
+        - users
+      summary: Request password reset
+      operationId: forgotPassword
+      requestBody:
+        description: The email to send the password reset token
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: 'ngpham81@gmail.com'
+      responses:
+        '200':
+          description: Password reset token sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: 'Check your email for the password reset token'
+                      forgot_password_token:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0NmE5MjJjOGQ2YzYwYzI5ZWM5MmQzIiwidG9rZW5fdHlwZSI6MiwidmVyaWZ5IjoxLCJpYXQiOjE3NTMzMzA3MDgsImV4cCI6MTc1MzQxNzEwOH0.HV6PAzBoEM6vmQ3o4qXSsC_BBJVsO6ws4SUa7CvobhM'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Validation error'
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: 'field'
+                          value:
+                            type: string
+                            example: 'Non-existent-Email@gmail.com'
+                          msg:
+                            type: string
+                            example: 'User not found'
+                          path:
+                            type: string
+                            example: 'email'
+                          location:
+                            type: string
+                            example: 'body'
+  /users/verify-forgot-password:
+    post:
+      tags:
+        - users
+      summary: Verify forgot password token
+      operationId: verifyForgotPasswordToken
+      requestBody:
+        description: The forgot password token to verify
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0NmE5MjJjOGQ2YzYwYzI5ZWM5MmQzIiwidG9rZW5fdHlwZSI6MiwidmVyaWZ5IjoxLCJpYXQiOjE3NTMzMzA3MDgsImV4cCI6MTc1MzQxNzEwOH0.HV6PAzBoEM6vmQ3o4qXSsC_BBJVsO6ws4SUa7CvobhM'
+      responses:
+        '200':
+          description: Forgot password token verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Verify forgot password success'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Jwt expired'
+components:
+  schemas:
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: ngpham81@gmail.com
+        password:
+          type: string
+          example: Phuong129iii@@
+    RegisterBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: 'ngpham84@gmail.com'
+        password:
+          type: string
+          example: 'Phuong129iii@@'
+        confirm_password:
+          type: string
+          example: 'Phuong129iii@@'
+        name:
+          type: string
+          example: 'Lam Uyen Phuong'
+        date_of_birth:
+          type: string
+          format: ISO8601
+          example: '2020-06-06T08:26:33.781Z'
+    AuthenticateSuccessfully:
+      type: object
+      properties:
+        result:
+          type: object
+          properties:
+            access_token:
+              type: string
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0NmE5MjJjOGQ2YzYwYzI5ZWM5MmQzIiwidG9rZW5fdHlwZSI6MCwidmVyaWZ5IjoxLCJpYXQiOjE3NTI1ODk5MzYsImV4cCI6MTc1MjU4OTk2Nn0.N0NpQZDcu-gMpXLApVimd0etDPJoz7cp6ksGsdbP1WA'
+            refresh_token:
+              type: string
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0NmE5MjJjOGQ2YzYwYzI5ZWM5MmQzIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE3NTI1ODk5MzYsImV4cCI6MTc2MTIyOTkzNn0.C4W_Me1Di-owhrpj1VJ6j-ImoPtWMy6QMPT6R-uJ4a8'
+    User:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: 'Get my profile success'
+        result:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: MongoDB ObjectId
+              example: '684ce37d83642ce3fe2c1eb3'
+            name:
+              type: string
+              example: 'Pham Lam Ha Vu'
+            email:
+              type: string
+              example: 'ngpham82@gmail.com'
+            date_of_birth:
+              type: string
+              format: ISO8601
+              example: '2020-06-06T08:26:33.781Z'
+            created_at:
+              type: string
+              format: ISO8601
+              example: '2025-06-14T02:50:37.452Z'
+            updated_at:
+              type: string
+              format: ISO8601
+              example: '2025-06-14T13:36:00.963Z'
+            forgot_password_token:
+              type: string
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0Y2UzN2Q4MzY0MmNlM2ZlMmMxZWIzIiwidG9rZW5fdHlwZSI6MiwidmVyaWZ5IjowLCJpYXQiOjE3NDk4NzI4MjIsImV4cCI6MTc0OTk1OTIyMn0.SJeHCEqSNH12Ph1xYE7a1Q9zKyw-mWalw4v-4RdNIv4'
+            verify:
+              $ref: '#/components/schemas/UserVerifyStatus'
+            twitter_circle:
+              type: array
+              items:
+                type: string
+                format: MongoDB ObjectId
+              example: ['67eea4b71938eb2f7eef13fc', '67eea4b71938eb2f7eef13fd']
+            bio:
+              type: string
+              example: 'This is my bio'
+            location:
+              type: string
+              example: ''
+            website:
+              type: string
+              example: ''
+            username:
+              type: string
+              example: 'user684ce37d83642ce3fe2c1eb3'
+            avatar:
+              type: string
+              example: 'http://localhost:4000/PLHV_avatar.jpg'
+            cover_photo:
+              type: string
+              example: 'http://localhost:4000/PLHV_cover_photo.jpg'
+    UserVerifyStatus:
+      type: number
+      enum: [Unverified, Verified, Banned]
+      example: 1
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Use the `Bearer` scheme to authenticate requests. Include the token in the `Authorization` header as follows:
+        ```
+        Authorization: Bearer <your_token>
+        ```

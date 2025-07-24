@@ -25,7 +25,6 @@ import DatabaseService from '~/services/database.services'
 import User from '~/models/schemas/User.schema'
 import userService from '~/services/users.services'
 import { config } from 'dotenv'
-import path from 'path'
 
 config()
 

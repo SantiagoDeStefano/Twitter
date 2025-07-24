@@ -14,6 +14,7 @@ export const USERS_MESSAGES = {
   CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
 
   DATE_OF_BIRTH_IS_REQUIRED: 'Date of birth is required',
+  DATE_OF_BIRTH_IS_NOT_VALID: 'Date of birth is not valid',
 
   EMAIL_ALREADY_EXISTS: 'Email already exists',
   EMAIL_ALREADY_VERIFIED: 'Email already verified',
@@ -38,8 +39,8 @@ export const USERS_MESSAGES = {
   INVALID_USER_ID: 'Invalid user ID',
   INVALID_USERNAME: 'Username must be between 4-15 characters and contain only letters, numbers, underscore',
 
-  LOGIN_SUCCESS: 'Login success',
-  LOGOUT_SUCCESS: 'Logout success',
+  LOGIN_SUCCESS: 'Login successfully',
+  LOGOUT_SUCCESS: 'Logout successfully',
   LOCATION_MUST_BE_A_STRING: 'Location must be a string',
   LOCATION_LENGTH_MUST_BE_BETWEEN_1_AND_100: 'Location length must be between 1 and 100',
 
