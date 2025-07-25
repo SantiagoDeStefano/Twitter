@@ -2,24 +2,16 @@ openapi: 3.0.4
 info:
   title: Twitter clone TypeScript - 2025
   description: |-
-    This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
-    Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
-    You can now help us improve the API whether it's by making changes to the definition itself or to the code.
-    That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
-
+    This API provides the backend services for a social media platform similar to Twitter.  
+    It includes features for user authentication and profile management, media upload and streaming, 
+    tweet creation and interaction, search functionality, and real-time conversations.  
+    The system is built with scalability, security, and modern REST API design principles in mind.
     Some useful links:
-    - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
-    - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
-  termsOfService: https://swagger.io/terms/
+    - [The Twitter's clone repository](https://github.com/SantiagoDeStefano/Twitter)
+    - [The source API definition for the Twitter's clone](https://github.com/SantiagoDeStefano/Twitter/blob/master/twitter-swagger.yaml)
   contact:
     email: ngpham.2807@gmail.com
-  license:
-    name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.12
-externalDocs:
-  description: Find out more about Swagger
-  url: https://swagger.io
+  version: 0.0.1
 servers:
   - url: http://localhost:4000
     description: Local server
@@ -2303,7 +2295,7 @@ paths:
                       content: "7"
                       created_at: '2025-07-08T07:56:31.885Z'
                       updated_at: '2025-07-08T07:56:31.885Z'
-  
+
 components:
   schemas:
     LoginBody:
