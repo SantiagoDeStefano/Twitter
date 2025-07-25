@@ -25,12 +25,22 @@ servers:
     description: Local server
 tags:
   - name: users
-    description: Everything about your Users
+    description: Everything about Users's requests
   - name: medias
-    description: Everything about your Medias
+    description: Everything about Medias's requests
   - name: serves
     description: Serve static files images and videos
-paths:
+  - name: tweets
+    description: Everything about Tweets's requests
+  - name: bookmarks
+    description: Everything about Bookmarks's requests
+  - name: likes
+    description: Everything about Likes's requests
+  - name: search
+    description: Everything about Search's requests
+  - name: conversations
+    description: Everything about Conversations's requests
+paths:  
   /users/login:
     post:
       tags:
@@ -115,10 +125,17 @@ paths:
                     type: string
                     example: User registered successfully
                   result:
-                    $ref: '#/components/schemas/AuthenticateSuccessfully'
-                    email_verify_token:
-                      type: string
-                      example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg3ZjU3M2ZiNzM1MGI5YWNmNzEwMzliIiwidG9rZW5fdHlwZSI6MywidmVyaWZ5IjowLCJpYXQiOjE3NTMxNzU4NzEsImV4cCI6MTc1Mzc4MDY3MX0.tiVewOpNKkFJejjBqg8MikYhLL_GvgRskBIYTVqG0Eg'
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0NmE5MjJjOGQ2YzYwYzI5ZWM5MmQzIiwidG9rZW5fdHlwZSI6MCwidmVyaWZ5IjoxLCJpYXQiOjE3NTI1ODk5MzYsImV4cCI6MTc1MjU4OTk2Nn0.N0NpQZDcu-gMpXLApVimd0etDPJoz7cp6ksGsdbP1WA'
+                      refresh_token:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg0NmE5MjJjOGQ2YzYwYzI5ZWM5MmQzIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE3NTI1ODk5MzYsImV4cCI6MTc2MTIyOTkzNn0.C4W_Me1Di-owhrpj1VJ6j-ImoPtWMy6QMPT6R-uJ4a8'
+                      email_verify_token:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjg3ZjU3M2ZiNzM1MGI5YWNmNzEwMzliIiwidG9rZW5fdHlwZSI6MywidmVyaWZ5IjowLCJpYXQiOjE3NTMxNzU4NzEsImV4cCI6MTc1Mzc4MDY3MX0.tiVewOpNKkFJejjBqg8MikYhLL_GvgRskBIYTVqG0Eg'
         '422':
           description: Unprocessable Entity
           content:
@@ -236,7 +253,7 @@ paths:
     post:
       tags:
         - users
-      summary: Verify user email
+      summary: Verify user email through SES
       operationId: verifyEmail
       requestBody:
         description: The email verification token
@@ -277,7 +294,7 @@ paths:
     post:
       tags:
         - users
-      summary: Request email verification
+      summary: Resend email verification through SES
       operationId: resendEmailVerify
       security:
         - BearerAuth: []
@@ -412,7 +429,7 @@ paths:
     post:
       tags:
         - users
-      summary: Reset user password
+      summary: Send forgot password token through SES
       operationId: resetPassword
       requestBody:
         description: The new password and confirmation
@@ -534,10 +551,10 @@ paths:
               properties:
                 name:
                   type: string
-                  example: 'Updated name'                
+                  example: 'Updated name'
                 bio:
                   type: string
-                  example: 'Updated bio'                
+                  example: 'Updated bio'
       responses:
         '200':
           description: User information updated successfully
@@ -631,6 +648,7 @@ paths:
                     properties:
                       _id:
                         type: string
+                        format: MongoDB ObjectId
                         example: 67ef503ba7f350002d994cdb
                       name:
                         type: string
@@ -640,26 +658,26 @@ paths:
                         example: ngpham35@gmail.com
                       date_of_birth:
                         type: string
-                        format: date-time
+                        format: ISO8601
                         example: '2020-06-06T08:26:33.781Z'
                       bio:
                         type: string
-                        example: ""
+                        example: ''
                       location:
                         type: string
-                        example: ""
+                        example: ''
                       website:
                         type: string
-                        example: ""
+                        example: ''
                       username:
                         type: string
                         example: user67ef503ba7f350002d994cdb
                       avatar:
                         type: string
-                        example: ""
+                        example: ''
                       cover_photo:
                         type: string
-                        example: ""
+                        example: ''
         '404':
           description: User not found
           content:
@@ -708,8 +726,8 @@ paths:
                 followSuccess:
                   summary: Successful follow
                   value:
-                      result:
-                        message: 'Follow successfully'
+                    result:
+                      message: 'Follow successfully'
                 alreadyFollowing:
                   summary: Already following
                   value:
@@ -895,7 +913,7 @@ paths:
                   summary: Access token required
                   value:
                     message: 'Access token is required'
-  
+
   /medias/upload-image:
     post:
       tags:
@@ -1156,9 +1174,9 @@ paths:
               schema:
                 type: string
                 example: '#EXTM3U
-                          #EXT-X-VERSION:3
-                          #EXT-X-STREAM-INF:BANDWIDTH=940957,AVERAGE-BANDWIDTH=878196,RESOLUTION=1280x720,CODECS="avc1.640032,mp4a.40.2"
-                          v0/prog_index.m3u8'
+                  #EXT-X-VERSION:3
+                  #EXT-X-STREAM-INF:BANDWIDTH=940957,AVERAGE-BANDWIDTH=878196,RESOLUTION=1280x720,CODECS="avc1.640032,mp4a.40.2"
+                  v0/prog_index.m3u8'
   /static/video-hls/{id}/{v}/{segment}:
     get:
       tags:
@@ -1186,8 +1204,1105 @@ paths:
             example: 'segment0.ts'
       responses:
         '204':
-          description: No Content 
+          description: No Content
 
+  /tweets:
+    post:
+      tags:
+        - tweets
+      summary: Create a new tweet
+      operationId: createTweet
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The tweet content and optional media
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  allOf:
+                    - $ref: '#/components/schemas/TweetType'
+                  example: 2
+                audience:
+                  allOf:
+                    - $ref: '#/components/schemas/TweetAudience'
+                  example: 0
+                content:
+                  type: string
+                  description: The text content of the tweet/comment
+                  example: 'This is child comment, created for retweet test'
+                parent_id:
+                  type: string
+                  format: MongoDB ObjectId
+                  nullable: true
+                  description: ID of the parent tweet/comment. null when it's an original tweet
+                  example: '68240ccd292f934777bd5dfb'
+                hashtags:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of hashtags used in the tweet
+                  example: ['Pham Lam Ha Vu']
+                mentions:
+                  type: array
+                  format: MongoDB ObjectId
+                  items:
+                    type: string
+                  description: Array of user IDs that are mentioned in the tweet
+                  example: ['68205e19d3d79ee7d9fc10db']
+                medias:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                        format: url
+                        description: URL of the media file
+                        example: 'https://www.w3schools.com/html/mov_bbb.mp4'
+                      type:
+                        type: integer
+                        description: Media type (0 for image, 1 for video)
+                        example: 1
+                  description: Array of media attachments
+                  example:
+                    - url: 'https://www.w3schools.com/html/mov_bbb.mp4'
+                      type: 1
+                    - url: 'https://picsum.photos/200'
+                      type: 0
+      responses:
+        '200':
+          description: Tweet created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Create tweet body successfully'
+                  result:
+                    $ref: '#/components/schemas/Tweet'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                  - errors
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating validation failure
+                    example: 'Validation error'
+                  errors:
+                    type: object
+                    description: Object containing field-specific validation errors
+                    additionalProperties:
+                      type: object
+                      required:
+                        - type
+                        - value
+                        - msg
+                        - path
+                        - location
+                      properties:
+                        type:
+                          type: string
+                          description: Type of validation error
+                          example: 'field'
+                        value:
+                          type: array
+                          items:
+                            type: string
+                          description: Array of error values or codes
+                          example: ['WrongFormat']
+                        msg:
+                          type: string
+                          description: Human-readable error message
+                          example: 'Medias must be a valid array of media objects'
+                        path:
+                          type: string
+                          description: Field path that caused the error
+                          example: 'medias'
+                        location:
+                          type: string
+                          description: Location of the error in the request
+                          example: 'body'
+                    example:
+                      medias:
+                        type: 'field'
+                        value: ['WrongFormat']
+                        msg: 'Medias must be a valid array of media objects'
+                        path: 'medias'
+                        location: 'body'
+  /tweets/{tweet_id}:
+    get:
+      tags:
+        - tweets
+      summary: Get a tweet by ID
+      operationId: getTweetById
+      security:
+        - BearerAuth: []
+        - {}
+      parameters:
+        - name: tweet_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: MongoDB ObjectId
+            example: '68240ccd292f934777bd5dfb'
+      responses:
+        '200':
+          description: Tweet retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Get tweet successfully'
+                  result:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        description: Unique identifier for the created tweet
+                        format: MongoDB ObjectId
+                        example: '688324677f7eef1aa5276cf3'
+                      user_id:
+                        type: string
+                        description: ID of the user who created the tweet
+                        format: MongoDB ObjectId
+                        example: '687f573fb7350b9acf71039b'
+                      type:
+                        $ref: '#/components/schemas/TweetType'
+                      audience:
+                        $ref: '#/components/schemas/TweetAudience'
+                      content:
+                        type: string
+                        description: The text content of the tweet/comment
+                        example: 'This is child comment, created for retweet test'
+                      parent_id:
+                        type: string
+                        nullable: true
+                        description: ID of the parent tweet/comment. null when it's an original tweet
+                        format: MongoDB ObjectId
+                        example: '68240ccd292f934777bd5dfb'
+                      hashtags:
+                        type: array
+                        items:
+                          type: string
+                        format: MongoDB ObjectId
+                        description: Array of hashtag IDs used in the tweet
+                        example: ['688324677f7eef1aa5276cf2']
+                      mentions:
+                        type: array
+                        items:
+                          type: string
+                        description: Array of user IDs that are mentioned in the tweet
+                        example: ['68205e19d3d79ee7d9fc10db']
+                      medias:
+                        type: array
+                        items:
+                          type: string
+                        description: Array of media attachment IDs
+                        example: []
+                      guest_views:
+                        type: integer
+                        description: Number of views from guest users
+                        example: 10
+                      user_views:
+                        type: integer
+                        description: Number of views from registered users
+                        example: 40
+                      created_at:
+                        type: string
+                        format: ISO8601
+                        description: Timestamp when the tweet was created
+                        example: '2025-07-25T06:29:59.749Z'
+                      updated_at:
+                        type: string
+                        format: ISO8601
+                        description: Timestamp when the tweet was last updated
+                        example: '2025-07-25T06:29:59.749Z'
+                      bookmarks:
+                        type: integer
+                        example: 0
+                      likes:
+                        type: integer
+                        example: 0
+                      retweet_count:
+                        type: integer
+                        example: 0
+                      comment_count:
+                        type: integer
+                        example: 15
+                      quote_count:
+                        type: integer
+                        example: 2
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid tweetID'
+        '404':
+          description: Tweet not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Tweet not found'
+        '401':
+          description: Unauthorized or tweet's audience is TwitterCircle while not logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+  /tweets/{tweet_id}/children:
+    get:
+      tags:
+        - tweets
+      summary: Get tweet's comments
+      operationId: getTweetChildrenById
+      security:
+        - BearerAuth: []
+        - {}
+      parameters:
+        - name: tweet_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: MongoDB ObjectId
+          example: '68240ccd292f934777bd5dfb'
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+          example: 3
+        - name: tweet_type
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+          example: 2
+      responses:
+        '200':
+          description: Child comments retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                  - result
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+                    example: 'Get tweet children successfully'
+                  result:
+                    type: object
+                    properties:
+                      tweets:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              format: MongoDB ObjectId
+                              description: Unique identifier for the tweet
+                              example: '68240d40292f934777bd5dfd'
+                            user_id:
+                              type: string
+                              format: MongoDB ObjectId
+                              description: ID of the user who created the tweet
+                              example: '6804b34b67a900679012e9fb'
+                            type:
+                              $ref: '#/components/schemas/TweetType'
+                            audience:
+                              $ref: '#/components/schemas/TweetAudience'
+                            content:
+                              type: string
+                              description: The text content of the tweet
+                              example: 'This is child comment, created for retweet test'
+                            parent_id:
+                              type: string
+                              format: MongoDB ObjectId
+                              nullable: true
+                              description: ID of the parent tweet
+                              example: '68240ccd292f934777bd5dfb'
+                            hashtags:
+                              type: array
+                              items:
+                                type: object
+                                required:
+                                  - _id
+                                  - name
+                                  - created_at
+                                properties:
+                                  _id:
+                                    type: string
+                                    format: MongoDB ObjectId
+                                    description: Hashtag ID
+                                    example: '68240d3f292f934777bd5dfc'
+                                  name:
+                                    type: string
+                                    description: Hashtag name
+                                    example: 'Pham Lam Ha Vu'
+                                  created_at:
+                                    type: string
+                                    format: date-time
+                                    description: When the hashtag was created
+                                    example: '2025-05-14T03:25:51.917Z'
+                              description: Array of hashtag objects
+                            mentions:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  _id:
+                                    type: string
+                                    format: MongoDB ObjectId
+                                    description: User ID
+                                    example: '68205e19d3d79ee7d9fc10db'
+                                  name:
+                                    type: string
+                                    description: User's full name
+                                    example: 'Pham Lam Ha Vu'
+                                  username:
+                                    type: string
+                                    description: User's username
+                                    example: 'user68205e19d3d79ee7d9fc10db'
+                                  email:
+                                    type: string
+                                    format: email
+                                    description: User's email
+                                    example: 'ngpham45@gmail.com'
+                              description: Array of mentioned user objects
+                            medias:
+                              type: array
+                              items:
+                                type: object
+                              description: Array of media attachments
+                              example: []
+                            guest_views:
+                              type: integer
+                              description: Number of views from guest users
+                              example: 4
+                            user_views:
+                              type: integer
+                              description: Number of views from registered users
+                              example: 19
+                            created_at:
+                              type: string
+                              format: date-time
+                              description: When the tweet was created
+                              example: '2025-05-14T03:25:52.141Z'
+                            updated_at:
+                              type: string
+                              format: date-time
+                              description: When the tweet was last updated
+                              example: '2025-07-25T09:34:26.645Z'
+                            bookmarks:
+                              type: integer
+                              description: Number of bookmarks
+                              example: 0
+                            likes:
+                              type: integer
+                              description: Number of likes
+                              example: 0
+                            retweet_count:
+                              type: integer
+                              description: Number of retweets
+                              example: 0
+                            comment_count:
+                              type: integer
+                              description: Number of comments
+                              example: 0
+                            quote_count:
+                              type: integer
+                              description: Number of quote tweets
+                              example: 0
+                            views:
+                              type: integer
+                              description: Total number of views
+                              example: 22
+                        description: Array of child tweets/comments
+                      tweet_type:
+                        type: integer
+                        description: Type of tweets in the response
+                        example: 2
+                      limit:
+                        type: integer
+                        description: Number of tweets per page
+                        example: 3
+                      page:
+                        type: integer
+                        description: Current page number
+                        example: 1
+                      total_page:
+                        type: integer
+                        description: Total number of pages
+                        example: 5
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid tweetID'
+        '404':
+          description: Tweet not found or no children found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Tweet not found'
+  /tweets/?limit={limit}&page={page_no}:
+    get:
+      tags:
+        - tweets
+      summary: Get newfeeds (from followers)
+      operationId: getAllTweets
+      security:
+        - BearerAuth: []
+        - {}
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            example: 10
+        - name: page_no
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+            example: 1
+      responses:
+        '200':
+          description: Tweets retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Get all tweets successfully'
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tweet'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Access token is required'
+
+  /bookmarks:
+    post:
+      tags:
+        - bookmarks
+      summary: Bookmark a tweet
+      operationId: bookmarkTweet
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The tweet ID to bookmark
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: MongoDB ObjectId
+                  example: '681e1641a726496cbfa426e8'
+      responses:
+        '200':
+          description: Bookmarked tweet successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bookmarked tweet successfully
+                  result:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        format: MongoDB ObjectId
+                        example: 68836d0b8fe95758e36461ca
+                      user_id:
+                        type: string
+                        format: MongoDB ObjectId
+                        example: '687f573fb7350b9acf71039b'
+                      tweet_id:
+                        type: string
+                        format: MongoDB ObjectId
+                        example: '681e1641a726496cbfa426e8'
+                      created_at:
+                        type: string
+                        format: ISO8601
+                        example: '2025-07-25T11:39:55.296Z'
+        '404':
+          description: Tweet not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Tweet not found'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User not verified'
+  /unbookmarks/tweets/{tweet_id}:
+    delete:
+      tags:
+        - bookmarks
+      summary: Unbookmark a tweet
+      operationId: unbookmarkTweet
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tweet_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: MongoDB ObjectId
+            example: '681e1641a726496cbfa426e8'
+      responses:
+        '200':
+          description: Unbookmarked tweet successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unbookmarked tweet successfully
+        '404':
+          description: Tweet not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Tweet not found'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid tweetID'
+
+  /likes:
+    post:
+      tags:
+        - likes
+      summary: Like a tweet
+      operationId: likeTweet
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The tweet ID to like
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: MongoDB ObjectId
+                  example: '681df9acd24199be6642c927'
+      responses:
+        '200':
+          description: Liked tweet successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Liked tweet successfully
+                  result:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        format: MongoDB ObjectId
+                        example: 6883707a7775c3d33368e778
+                      tweet_id:
+                        type: string
+                        format: MongoDB ObjectId
+                        example: '681df9acd24199be6642c927'
+                      user_id:
+                        type: string
+                        format: MongoDB ObjectId
+                        example: '687f573fb7350b9acf71039b'
+                      created_at:
+                        type: string
+                        format: ISO8601
+                        example: '2025-07-25T11:54:34.667Z'
+        '404':
+          description: Tweet not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Tweet not found'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'User not verified'
+  /likes/tweets/{tweet_id}:
+    delete:
+      tags:
+        - likes
+      summary: Unlike a tweet
+      operationId: unlikeTweet
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tweet_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: MongoDB ObjectId
+            example: '681df9acd24199be6642c927'
+      responses:
+        '200':
+          description: Unliked tweet successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unliked tweet successfully
+                  result:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        format: MongoDB ObjectId
+                        example: 6883707a7775c3d33368e778
+                      tweet_id:
+                        type: string
+                        format: MongoDB ObjectId
+                        example: 681df9acd24199be6642c927
+                      user_id:
+                        type: string
+                        format: MongoDB ObjectId
+                        example: 687f573fb7350b9acf71039b
+                      created_at:
+                        type: string
+                        format: ISO8601
+                        example: '2025-07-25T11:54:34.667Z'
+        '404':
+          description: Tweet not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Tweet not found'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid tweetID'
+
+  /search:
+    get:
+      tags:
+        - search
+      summary: Search tweets and users
+      operationId: search
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: content
+          in: query
+          required: true
+          schema:
+            type: string
+          example: accusator
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+          example: 2
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+          example: 1
+        - name: people_follow
+          in: query
+          required: false
+          schema:
+            type: boolean
+          example: false
+      responses:
+        '200':
+          description: Searched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Searched successfully
+                  result:
+                    type: object
+                    properties:
+                      tweets:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 6825b45db002e112f23248fe
+                            user_id:
+                              type: string
+                              example: 6825b42db002e112f23231a3
+                            type:
+                              type: integer
+                              example: 0
+                            audience:
+                              type: integer
+                              example: 0
+                            content:
+                              type: string
+                              example: 'Desidero adipiscor degero calco una xiphias consuasor. ...'
+                            parent_id:
+                              type: string
+                              nullable: true
+                              example: null
+                            hashtags:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  _id:
+                                    type: string
+                                    example: 6825b433b002e112f232333c
+                                  name:
+                                    type: string
+                                    example: NodeJS
+                                  created_at:
+                                    type: string
+                                    format: date-time
+                                    example: 2025-05-15T09:30:27.850Z
+                            mentions:
+                              type: array
+                              items:
+                                type: string
+                              example: []
+                            medias:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  type:
+                                    type: integer
+                                    example: 0
+                                  url:
+                                    type: string
+                                    format: uri
+                                    example: https://loremflickr.com/539/1966?lock=8120298342140735
+                            guest_views:
+                              type: integer
+                              example: 0
+                            user_views:
+                              type: integer
+                              example: 5
+                            created_at:
+                              type: string
+                              format: date-time
+                              example: 2025-05-15T09:31:09.475Z
+                            updated_at:
+                              type: string
+                              format: date-time
+                              example: 2025-07-25T12:04:04.478Z
+                            user:
+                              type: object
+                              properties:
+                                _id:
+                                  type: string
+                                  example: 6825b42db002e112f23231a3
+                                name:
+                                  type: string
+                                  example: Herminia46
+                                email:
+                                  type: string
+                                  example: Libbie.Pfeffer@gmail.com
+                                created_at:
+                                  type: string
+                                  format: date-time
+                                  example: 2025-05-15T09:30:21.075Z
+                                updated_at:
+                                  type: string
+                                  format: date-time
+                                  example: 2025-05-15T09:30:21.075Z
+                                verify:
+                                  type: integer
+                                  example: 1
+                                bio:
+                                  type: string
+                                  example: ''
+                                location:
+                                  type: string
+                                  example: ''
+                                website:
+                                  type: string
+                                  example: ''
+                                username:
+                                  type: string
+                                  example: user6825b42db002e112f23231a3
+                                avatar:
+                                  type: string
+                                  example: ''
+                                cover_photo:
+                                  type: string
+                                  example: ''
+                            bookmarks:
+                              type: integer
+                              example: 0
+                            likes:
+                              type: integer
+                              example: 0
+                            retweet_count:
+                              type: integer
+                              example: 0
+                            comment_count:
+                              type: integer
+                              example: 0
+                            quote_count:
+                              type: integer
+                              example: 0
+                            views:
+                              type: integer
+                              example: 4
+                      limit:
+                        type: integer
+                        example: 2
+                      page:
+                        type: integer
+                        example: 1
+                      total_pages:
+                        type: integer
+                        example: 321
+
+  /conversations/receiver/{receiver_id}:
+    get:
+      tags:
+        - conversations
+      summary: Get conversations for a receiver
+      parameters:
+        - name: receiver_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: MongoDB ObjectId
+          example: 684ce37d83642ce3fe2c1eb3
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+          example: 3
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+          example: 3
+      responses:
+        '200':
+          description: Get conversations successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get conversations successfully
+                  result:
+                    type: object
+                    properties:
+                      limit:
+                        type: integer
+                        example: 3
+                      page:
+                        type: integer
+                        example: 3
+                      total_page:
+                        type: integer
+                        example: 20
+                      conversations:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              format: MongoDB ObjectId
+                              example: 686ccf30d579f697220b70da
+                            sender_id:
+                              type: string
+                              format: MongoDB ObjectId
+                              example: 684ce37d83642ce3fe2c1eb3
+                            receiver_id:
+                              type: string
+                              format: MongoDB ObjectId
+                              example: 6846a922c8d6c60c29ec92d3
+                            content:
+                              type: string
+                              example: "9"
+                            created_at:
+                              type: string
+                              format: ISO8601
+                              example: '2025-07-08T07:56:32.605Z'
+                            updated_at:
+                              type: string
+                              format: ISO8601
+                              example: '2025-07-08T07:56:32.605Z'
+              example:
+                message: Get conversations successfully
+                result:
+                  limit: 3
+                  page: 3
+                  total_page: 20
+                  conversations:
+                    - _id: 686ccf30d579f697220b70da
+                      sender_id: 684ce37d83642ce3fe2c1eb3
+                      receiver_id: 6846a922c8d6c60c29ec92d3
+                      content: "9"
+                      created_at: '2025-07-08T07:56:32.605Z'
+                      updated_at: '2025-07-08T07:56:32.605Z'
+                    - _id: 686ccf30d579f697220b70d9
+                      sender_id: 684ce37d83642ce3fe2c1eb3
+                      receiver_id: 6846a922c8d6c60c29ec92d3
+                      content: "8"
+                      created_at: '2025-07-08T07:56:32.172Z'
+                      updated_at: '2025-07-08T07:56:32.172Z'
+                    - _id: 686ccf2fd579f697220b70d8
+                      sender_id: 684ce37d83642ce3fe2c1eb3
+                      receiver_id: 6846a922c8d6c60c29ec92d3
+                      content: "7"
+                      created_at: '2025-07-08T07:56:31.885Z'
+                      updated_at: '2025-07-08T07:56:31.885Z'
   
 components:
   schemas:
@@ -1196,7 +2311,7 @@ components:
       properties:
         email:
           type: string
-          example: ngpham81@gmail.com
+          example: ngpham83@gmail.com
         password:
           type: string
           example: Phuong129iii@@
@@ -1293,6 +2408,70 @@ components:
             cover_photo:
               type: string
               example: 'http://localhost:4000/PLHV_cover_photo.jpg'
+    Tweet:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unique identifier for the created tweet
+          format: MongoDB ObjectId
+          example: '688324677f7eef1aa5276cf3'
+        user_id:
+          type: string
+          description: ID of the user who created the tweet
+          format: MongoDB ObjectId
+          example: '687f573fb7350b9acf71039b'
+        type:
+          $ref: '#/components/schemas/TweetType'
+        audience:
+          $ref: '#/components/schemas/TweetAudience'
+        content:
+          type: string
+          description: The text content of the tweet/comment
+          example: 'This is child comment, created for retweet test'
+        parent_id:
+          type: string
+          nullable: true
+          description: ID of the parent tweet/comment. null when it's an original tweet
+          format: MongoDB ObjectId
+          example: '68240ccd292f934777bd5dfb'
+        hashtags:
+          type: array
+          items:
+            type: string
+          format: MongoDB ObjectId
+          description: Array of hashtag IDs used in the tweet
+          example: ['688324677f7eef1aa5276cf2']
+        mentions:
+          type: array
+          items:
+            type: string
+          description: Array of user IDs that are mentioned in the tweet
+          example: ['68205e19d3d79ee7d9fc10db']
+        medias:
+          type: array
+          items:
+            type: string
+          description: Array of media attachment IDs
+          example: []
+        guest_views:
+          type: integer
+          description: Number of views from guest users
+          example: 0
+        user_views:
+          type: integer
+          description: Number of views from registered users
+          example: 0
+        created_at:
+          type: string
+          format: ISO8601
+          description: Timestamp when the tweet was created
+          example: '2025-07-25T06:29:59.749Z'
+        updated_at:
+          type: string
+          format: ISO8601
+          description: Timestamp when the tweet was last updated
+          example: '2025-07-25T06:29:59.749Z'
     UserVerifyStatus:
       type: integer
       description: |
@@ -1318,6 +2497,22 @@ components:
         - 2 = Successfully
         - 3 = Failed
       enum: [0, 1, 2, 3]
+    TweetType:
+      type: integer
+      description: |
+        Tweet type:
+        - 0 = Tweet
+        - 1 = Retweet
+        - 2 = Comment
+        - 3 = QuoteTweet
+      enum: [0, 1, 2, 3]
+    TweetAudience:
+      type: integer
+      description: |
+        Audience visibility setting:
+        - 0 = Everyone
+        - 1 = TwitterCircle
+      enum: [0, 1]
   securitySchemes:
     BearerAuth:
       type: http

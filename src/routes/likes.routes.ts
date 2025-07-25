@@ -28,7 +28,7 @@ likesRoutes.post(
  * Header: { Authorization: Bearer <access_token> }
  */
 likesRoutes.delete(
-  '/tweets/:tweet_unlike_id',
+  '/tweets/:tweet_id',
   accessTokenValidator,
   verifiedUserValidator,
   tweetIdValidator,

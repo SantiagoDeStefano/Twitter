@@ -23,12 +23,12 @@ bookmarksRouter.post(
 
 /**
  * Description: Bookmark Tweet
- * Path: /tweets/:tweet_unbookmark_id
+ * Path: /tweets/:tweet_id
  * Method: DELETE
  * Header: { Authorization: Bearer <access_token> }
  */
 bookmarksRouter.delete(
-  '/tweets/:tweet_unbookmark_id',
+  '/tweets/:tweet_id',
   accessTokenValidator,
   verifiedUserValidator,
   tweetIdValidator,

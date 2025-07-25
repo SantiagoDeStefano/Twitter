@@ -22,11 +22,10 @@ export const unlikeTweetController = async (
   res: Response
 ): Promise<void> => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  const { tweet_unlike_id: tweet_id } = req.params
+  const { tweet_id } = req.params
   console.log(tweet_id)
-  const result = await likesService.unlikeTweet(user_id, tweet_id)
+  await likesService.unlikeTweet(user_id, tweet_id)
   res.json({
     message: LIKES_MESSAGES.UNLIKES_TWEET_SUCCESSFULLY,
-    result
   })
 }

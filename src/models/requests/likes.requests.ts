@@ -5,5 +5,5 @@ export interface LikeTweetRequestBody {
 
 // Params
 export interface UnlikeTweetParams {
-  tweet_unlike_id: string
+  tweet_id: string
 }

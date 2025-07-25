@@ -94,7 +94,7 @@ export const MEDIAS_MESSAGES = {
 export const TWEETS_MESSAGES = {
   CONTENT_MUST_BE_A_NON_EMPTY_STRING: 'Content must be a non-empty string',
   CONTENT_MUST_BE_AN_EMPTY_STRING: 'Content must be an empty string',
-  CREATED_TWEET_BODY: 'Created tweet body',
+  CREATED_TWEET_BODY: 'Created tweet body successfully',
 
   GET_TWEET_SUCCESSFULLY: 'Get tweet successfully',
   GET_TWEET_CHILDREN_SUCCESSFULLY: 'Get tweet children successfully',
@@ -114,7 +114,7 @@ export const TWEETS_MESSAGES = {
   PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'ParentID must be a valid tweet id',
   PARENT_ID_MUST_BE_NULL: 'ParentID must be null',
 
-  TWEET_NOT_FOUND: 'Tweet notfound',
+  TWEET_NOT_FOUND: 'Tweet not found',
   TWEET_IS_NOT_PUBLIC: 'Tweet is not public'
 } as const
 

@@ -30,8 +30,8 @@ export interface RegisterRequestBody {
 
 export interface ResetPasswordRequestBody {
   forgot_password_token: string
-  new_password: string
-  confirm_new_password: string
+  password: string
+  confirm_password: string
 }
 
 export interface TokenPayload extends JwtPayload {

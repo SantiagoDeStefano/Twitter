@@ -77,7 +77,6 @@ const forgotPasswordTokenSchema: ParamSchema = {
         })
         const { user_id } = decoded_forgot_password_token
         const user = await DatabaseService.user.findOne({ _id: new ObjectId(user_id) })
-
         if (!user) {
           throw new ErrorWithStatus({
             message: USERS_MESSAGES.USER_NOT_FOUND,
