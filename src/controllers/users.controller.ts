@@ -18,16 +18,13 @@ import {
 } from '~/models/requests/users.requests'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { UserVerifyStatus } from '~/constants/enums'
+import { envConfig } from '~/constants/config'
 import { ObjectId } from 'mongodb'
 
 import HTTP_STATUS from '~/constants/httpStatus'
 import DatabaseService from '~/services/database.services'
 import User from '~/models/schemas/User.schema'
 import userService from '~/services/users.services'
-import { config } from 'dotenv'
-import { envConfig } from '~/constants/config'
-
-config()
 
 export const loginController = async (
   req: Request<ParamsDictionary, any, LoginRequestBody>,

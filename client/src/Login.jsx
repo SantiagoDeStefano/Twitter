@@ -10,8 +10,6 @@ export default function Login() {
     const refresh_token = params.get('refresh_token')
     const new_user = params.get('new_user')
     const verify = params.get('verify')
-    console.log(new_user)
-    console.log(verify)
     // Test UI for login method 
     // We can create reguster UI for register method, depends on new_user for new/old user
     // Based on new_user, verify to determine if a user is old/new and their email unverified/verified

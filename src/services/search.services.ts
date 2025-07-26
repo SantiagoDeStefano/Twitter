@@ -61,7 +61,6 @@ class SearchService {
     }
 
     const user_object_id = new ObjectId(user_id)
-    console.log(match)
 
     const [tweets, total] = await Promise.all([
       DatabaseService.tweets

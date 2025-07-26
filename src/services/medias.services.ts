@@ -5,7 +5,6 @@ import { envConfig, isProduction } from '~/constants/config'
 import { EncodingStatus, MediaType } from '~/constants/enums'
 import { Media } from '~/models/Others'
 import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
-import { config } from 'dotenv'
 import { uploadFileToS3 } from '~/utils/s3'
 import { ObjectId } from 'mongodb'
 
@@ -16,8 +15,6 @@ import DatabaseService from './database.services'
 import VideoStatus from '~/models/schemas/VideoStatus.schema'
 import mime from 'mime'
 import fsPromise from 'fs/promises'
-
-config()
 
 class Queue {
   items: string[]
@@ -137,7 +134,6 @@ class MediasService {
         const newName = getNameFromFullname(file.newFilename)
         const newFullFilename = `${newName}.jpg`
         const newPath = path.resolve(UPLOAD_IMAGE_DIR, `${newFullFilename}`)
-        console.log(newPath)
         sharp.cache(false)
         await sharp(file.filepath).jpeg().toFile(newPath)
 
