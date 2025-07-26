@@ -1,21 +1,16 @@
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
-import { isUtf8 } from 'buffer'
 import { config } from 'dotenv'
+import { envConfig } from '~/constants/config'
+
 import fs from 'fs'
 import path from 'path'
 
-config()
-
-// console.log(process.env.AWS_REGION)
-// console.log(process.env.AWS_ACCESS_KEY_ID)
-// console.log(process.env.AWS_SECRET_ACCESS_KEY)
-
 // Create SES service object.
 export const sesClient = new SESClient({
-  region: process.env.AWS_REGION,
+  region: envConfig.awsRegion,
   credentials: {
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string
+    secretAccessKey: envConfig.awsSecretAccessKey as string,
+    accessKeyId: envConfig.awsAccessKeyId as string
   }
 })
 
@@ -63,7 +58,7 @@ export const createSendEmailCommand = ({
 
 const sendVerifyEmail = async (toAddress: string, subject: string, body: string) => {
   const sendEmailCommand = createSendEmailCommand({
-    fromAddress: process.env.SES_FROM_ADDRESS as string,
+    fromAddress: envConfig.sesFromAddress as string,
     toAddresses: 'khoinguyenpkn@gmail.com',
     body,
     subject
@@ -91,7 +86,7 @@ export const sendVerifyRegisterEmail = (
       .replace('{{content}}', 'Click the button below to verify your email')
       .replace('{{button}}', 'Verify your email')
       .replace('{{titleLink}}', 'Verify')
-      .replace('{{link}}', `${process.env.CLIENT_URL}/email-verification?token=${email_verify_token}`)
+      .replace('{{link}}', `${envConfig.clientUrl}/email-verification?token=${email_verify_token}`)
   )
 }
 
@@ -108,6 +103,6 @@ export const sendForgotPasswordEmail = (
       .replace('{{content}}', 'Click the button below to reset your password')
       .replace('{{button}}', 'Reset password')
       .replace('{{titleLink}}', 'Reset Password')
-      .replace('{{link}}', `${process.env.CLIENT_URL}/forgot-password?token=${forgot_password_token}`)
+      .replace('{{link}}', `${envConfig.clientUrl}/forgot-password?token=${forgot_password_token}`)
   )
 }

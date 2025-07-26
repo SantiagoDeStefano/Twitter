@@ -4,6 +4,8 @@ import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
 import { config } from 'dotenv'
 import { createServer } from 'http'
 
+// import '~/utils/s3'
+// import '~/utils/fake'
 import staticRouter from './routes/static.routes'
 import express from 'express'
 import usersRouter from './routes/users.routes'
@@ -15,8 +17,14 @@ import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likeRoutes from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
-// import '~/utils/s3'
-// import '~/utils/fake'
+import YAML from 'yaml'
+import fs from 'fs'
+import path from 'path'
+import swaggerUi from 'swagger-ui-express'
+import { envConfig } from './constants/config'
+
+const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
+const swaggerDocument = YAML.parse(file)
 
 config()
 
@@ -33,7 +41,7 @@ const app = express()
 const httpServer = createServer(app)
 
 app.use(cors())
-const port = process.env.PORT
+const port = envConfig.port
 
 // Create upload folder
 initFolder()
@@ -41,6 +49,7 @@ initFolder()
 console.log(UPLOAD_IMAGE_DIR)
 
 app.use(express.json())
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 app.use('/tweets', tweetsRouter)

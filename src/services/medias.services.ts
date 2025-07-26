@@ -1,20 +1,21 @@
 import { Request } from 'express'
 import { getFiles, getNameFromFullname, handleUploadImage, handleUploadVideo } from '~/utils/file'
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
-import { isProduction } from '~/constants/config'
+import { envConfig, isProduction } from '~/constants/config'
 import { EncodingStatus, MediaType } from '~/constants/enums'
 import { Media } from '~/models/Others'
 import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
+import { config } from 'dotenv'
+import { uploadFileToS3 } from '~/utils/s3'
+import { ObjectId } from 'mongodb'
+
 import slash from 'slash'
 import sharp from 'sharp'
 import path from 'path'
-import { config } from 'dotenv'
 import DatabaseService from './database.services'
 import VideoStatus from '~/models/schemas/VideoStatus.schema'
-import { uploadFileToS3 } from '~/utils/s3'
 import mime from 'mime'
 import fsPromise from 'fs/promises'
-import { ObjectId } from 'mongodb'
 
 config()
 
@@ -148,13 +149,6 @@ class MediasService {
 
         await Promise.all([fsPromise.unlink(file.filepath), fsPromise.unlink(newPath)])
 
-        // return {
-        //   url: isProduction
-        //     ? `${process.env.HOST}/static/image/${newFullFilename}`
-        //     : `http://localhost:${process.env.PORT}/static/image/${newFullFilename}`,
-        //   type: MediaType.Image
-        // }
-
         return {
           url: s3Result.Location as string,
           type: MediaType.Image
@@ -174,13 +168,6 @@ class MediasService {
           contentType: mime.getType(file.filepath) as string,
           filePath: file.filepath
         })
-
-        // return {
-        //   url: isProduction
-        //     ? `${process.env.HOST}/static/video/${file.newFilename}`
-        //     : `http://localhost:${process.env.PORT}/static/video/${file.newFilename}`,
-        //   type: MediaType.Video
-        // }
 
         fsPromise.unlink(file.filepath)
 
@@ -203,8 +190,8 @@ class MediasService {
         // fsPromise.unlinkSync(file.filepath)
         return {
           url: isProduction
-            ? `${process.env.HOST}/static/video-hls/${newName}/master.m3u8`
-            : `http://localhost:${process.env.PORT}/static/video-hls/${newName}/master.m3u8`,
+            ? `${envConfig.host}/static/video-hls/${newName}/master.m3u8`
+            : `http://localhost:${envConfig.port}/static/video-hls/${newName}/master.m3u8`,
           type: MediaType.HLS
         }
       })
