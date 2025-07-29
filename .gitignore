@@ -2,5 +2,6 @@ node_modules/
 dist/
 .env
 uploads/
+.env.development
 .env.staging
 .env.production

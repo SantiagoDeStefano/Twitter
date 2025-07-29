@@ -4,11 +4,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon --development",
+    "dev": "npx nodemon --env=development",
     "dev:prod": "npx nodemon --env=production",
     "dev:stage": "npx nodemon --env=staging",
     "build": "npx rimraf ./dist && tsc && npx tsc-alias",
-    "start": "node dist/index.js --production",
+    "build:indexjs": "tsc && cp .env.development dist/",
+    "start": "node dist/index.js --env=production",
     "start:prod": "node dist/index.js --env=production",
     "start:stage": "node dist/index.js --env=staging",
     "lint": "eslint .",
@@ -55,6 +56,7 @@
     "lodash": "^4.17.21",
     "mime": "^4.0.7",
     "minimist": "^1.2.8",
+    "module-alias": "^2.2.3",
     "mongodb": "^6.14.0",
     "nanoid": "^5.1.5",
     "react-infinite-scroll-component": "^6.1.0",
@@ -69,5 +71,8 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.9",
     "utf-8-validate": "^6.0.5"
+  },
+  "_moduleAliases": {
+    "~": "dist"
   }
 }

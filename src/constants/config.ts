@@ -3,9 +3,10 @@ import { config } from 'dotenv'
 
 const options = argv(process.argv.slice(2))
 export const isProduction = options.env === 'production'
+console.log(options)
 
 config({
-  path: options.env ? `.env.${options.env}` : '.env',
+  path: options.env ? `.env.${options.env}` : '.env.development',
 })
 
 export const envConfig = {
@@ -49,5 +50,5 @@ export const envConfig = {
   awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   awsRegion: process.env.AWS_REGION as string,
   sesFromAddress: process.env.SES_FROM_ADDRESS as string,
-  s3BucketName: process.env.S3_BUCKET_NAME as string,
+  s3BucketName: process.env.S3_BUCKET_NAME as string
 }
