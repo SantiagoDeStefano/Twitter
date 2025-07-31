@@ -8,12 +8,10 @@ import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
 import { uploadFileToS3 } from '~/utils/s3'
 import { ObjectId } from 'mongodb'
 
-import slash from 'slash'
 import sharp from 'sharp'
 import path from 'path'
 import DatabaseService from './database.services'
 import VideoStatus from '~/models/schemas/VideoStatus.schema'
-import mime from 'mime'
 import fsPromise from 'fs/promises'
 
 class Queue {
@@ -68,12 +66,15 @@ class Queue {
       await encodeHLSWithMultipleVideoStreams(videoPath)
       const files = getFiles(path.resolve(UPLOAD_VIDEO_DIR, idName))
       await Promise.all(
-        files.map((filepath) => {
-          const filename = slash('videos-hls' + filepath.replace(path.resolve(UPLOAD_VIDEO_DIR), ''))
-          return uploadFileToS3({
-            filename: filename,
-            filePath: filepath,
-            contentType: mime.getType(filepath) as string
+        files.map(async (filepath) => {
+          const slash = await import('slash')
+          const mime = await import('mime')
+
+          const filename = slash.default('videos-hls' + filepath.replace(path.resolve(UPLOAD_VIDEO_DIR), ''))
+            return uploadFileToS3({
+              filename: filename,
+              filePath: filepath,
+              contentType: mime.default.getType(filepath) as string
           })
         })
       )
@@ -137,10 +138,13 @@ class MediasService {
         sharp.cache(false)
         await sharp(file.filepath).jpeg().toFile(newPath)
 
+        // Import mime dynamically to avoid circular dependency issues
+        const mime = await import('mime')
+
         const s3Result = await uploadFileToS3({
           filename: 'images/' + newFullFilename,
           filePath: newPath,
-          contentType: mime.getType(newPath) as string
+          contentType: mime.default.getType(newPath) as string
         })
 
         await Promise.all([fsPromise.unlink(file.filepath), fsPromise.unlink(newPath)])
@@ -159,9 +163,12 @@ class MediasService {
 
     const result: Media[] = await Promise.all(
       files.map(async (file) => {
+        // Import mime dynamically
+        const mime = await import('mime')
+
         const s3Result = await uploadFileToS3({
           filename: 'videos/' + file.newFilename,
-          contentType: mime.getType(file.filepath) as string,
+          contentType: mime.default.getType(file.filepath) as string,
           filePath: file.filepath
         })
 

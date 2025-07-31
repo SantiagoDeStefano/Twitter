@@ -1,6 +1,5 @@
 import { Request } from 'express'
-import { UPLOAD_IMAGE_DIR, UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_DIR, UPLOAD_VIDEO_TEMP_DIR } from '~/constants/dir'
-import { nanoid } from 'nanoid'
+import { UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_DIR, UPLOAD_VIDEO_TEMP_DIR } from '~/constants/dir'
 import formidable, { File } from 'formidable'
 
 // Handling path
@@ -54,7 +53,10 @@ export const handleUploadImage = (req: Request) => {
 // Video uploading: Uploaded successfully, resolve back for user
 // Video encoding: Declare another url endpoint to check if the video finished encoding or not
 
-export const handleUploadVideo = (req: Request) => {
+export const handleUploadVideo = async (req: Request) => {
+  // Import nanoid dynamically
+  const { nanoid } = await import('nanoid')
+
   const idName = nanoid()
   const folderPath = path.resolve(UPLOAD_VIDEO_DIR, idName)
   fs.mkdirSync(folderPath)
