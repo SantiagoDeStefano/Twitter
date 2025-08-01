@@ -68,3 +68,4 @@ export default class User {
     this.cover_photo = user.cover_photo || ''
   }
 }
+

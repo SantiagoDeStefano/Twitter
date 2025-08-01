@@ -111,7 +111,7 @@ const checkAndCreateHashtags = async (hashtags: string[]) => {
       )
     })
   )
-  return hashtagDocuments.map((hashtag) => ((hashtag as WithId<Hashtag>)._id))
+  return hashtagDocuments.map((hashtag) => (hashtag as WithId<Hashtag>)._id)
 }
 
 const insertTweet = async (user_id: ObjectId, body: CreateTweetRequestBody) => {

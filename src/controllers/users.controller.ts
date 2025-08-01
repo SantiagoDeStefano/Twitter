@@ -36,7 +36,7 @@ export const loginController = async (
   res.json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
     result
-  })  
+  })
   return
 }
 
@@ -169,14 +169,14 @@ export const resetPasswordController = async (
   res: Response
 ): Promise<void> => {
   const { user_id } = req.decoded_forgot_password_token as TokenPayload
-  const password = req.body.confirm_password  
+  const password = req.body.confirm_password
   const result = await userService.resetPassword(user_id, password)
   res.json({
     result
   })
 }
 
-export const getMeController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {  
+export const getMeController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const user = await userService.getMe(user_id)
   res.json({
