@@ -15,7 +15,7 @@ jobs:
         run: echo "${{ secrets.TWITTER_ENV_DEVELOPMENT }}" > .env.development
       - name: Build the Docker image
         run: |
-          IMAGE_TAG=nguyen/twitter:$(date +%s)
+          IMAGE_TAG=khoinguyenpham/twitter:$(date +%s)
           docker build . --file Dockerfile --tag $IMAGE_TAG
           echo "::set-output name=image_tag::$IMAGE_TAG"
         id: build
