@@ -61,7 +61,7 @@ const port = envConfig.port
 initFolder()
 
 app.use(express.json())
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+app.use('/node-js/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 app.use('/tweets', tweetsRouter)

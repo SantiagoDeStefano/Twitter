@@ -9,7 +9,7 @@
     "dev:stage": "npx nodemon --env=staging",
     "build": "npx rimraf ./dist && tsc && npx tsc-alias",
     "build:indexjs": "tsc && cp .env.development dist/",
-    "start": "node dist/index.js --env=production",
+    "start": "node dist/index.js --env=development",
     "start:prod": "node dist/index.js --env=production",
     "start:stage": "node dist/index.js --env=staging",
     "lint": "eslint .",
